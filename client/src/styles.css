@@ -1,0 +1,101 @@
+/* Styles maison, en plus de Bulma. Couleur principale : violet de la clinique. */
+:root {
+  --bulma-primary-h: 266deg;
+  --bulma-primary-s: 52%;
+  --bulma-primary-l: 52%;
+  --violet: #8e5bd0;
+  --fond: #f6f5f9;
+}
+
+/* Interface claire en tout temps (lisible en plein appel) */
+html { background: var(--fond); color-scheme: light; }
+body { min-height: 100vh; }
+
+.barre { border-bottom: 1px solid #e6e2ef; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02); }
+.marque { gap: 0.6rem; line-height: 1.15; }
+.barre a.navbar-item.is-active, .barre a.navbar-item:hover {
+  background: transparent; color: var(--violet); box-shadow: inset 0 -3px 0 var(--violet);
+}
+.barre .navbar-item.marque, .barre .navbar-item.marque:hover { box-shadow: none; color: inherit; }
+.marque small { color: #7a7487; font-size: 0.72rem; }
+.marque-icone {
+  display: inline-grid; place-items: center;
+  width: 2rem; height: 2rem; border-radius: 0.5rem;
+  background: var(--violet); color: #fff; font-size: 1.05rem;
+}
+.marque-icone.grande { width: 3.2rem; height: 3.2rem; font-size: 1.6rem; border-radius: 0.8rem; }
+
+/* Indicateur temps réel */
+.direct { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: #8a8494; }
+.direct .point { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: #bbb; }
+.direct.est-actif { color: #23855b; }
+.direct.est-actif .point { background: #2fbf71; box-shadow: 0 0 0 3px rgba(47, 191, 113, 0.2); animation: pulse 2s infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 6px rgba(47, 191, 113, 0); } }
+
+/* Connexion */
+.page-connexion { min-height: 100vh; display: grid; place-items: center; padding: 1rem; }
+.boite-connexion { width: 100%; max-width: 380px; }
+
+/* Compteurs par statut */
+.compteurs { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.compteur {
+  display: flex; align-items: baseline; gap: 0.5rem; cursor: pointer;
+  padding: 0.6rem 1rem; border-radius: 0.6rem; border: 1px solid #e6e2ef; background: #fff;
+  font: inherit; color: #4a4458;
+}
+.compteur .nombre { font-size: 1.5rem; font-weight: 700; }
+.compteur.is-danger .nombre { color: #d6304f; }
+.compteur.is-warning .nombre { color: #c58a00; }
+.compteur.is-info .nombre { color: #2b7bbf; }
+.compteur.est-choisi { border-color: var(--violet); box-shadow: 0 0 0 2px rgba(142, 91, 208, 0.25); }
+
+.filtres { padding: 1rem; }
+
+/* Tableau des appels */
+.tableau-appels tbody tr { cursor: pointer; transition: background 0.4s; }
+.tableau-appels th { font-size: 0.85rem; white-space: nowrap; }
+.tableau-appels td { vertical-align: middle; font-size: 0.88rem; }
+.tableau-appels .motif { max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tableau-appels tr.ligne-nouvelle td:first-child { box-shadow: inset 3px 0 0 #d6304f; }
+.ligne-flash { animation: flash 2.5s ease-out; }
+@keyframes flash { 0%, 30% { background: #fff4c2; } 100% { background: transparent; } }
+.is-nowrap { white-space: nowrap; }
+
+.tag.service { background: #fff; border: 1px solid; gap: 0.35rem; font-weight: 600; }
+.tag.service .pastille { width: 0.5rem; height: 0.5rem; border-radius: 50%; display: inline-block; }
+.tag.langue { font-weight: 700; letter-spacing: 0.03em; }
+.langue-fr { background: #e8f0fe; color: #1a56b8; }
+.langue-en { background: #fdecef; color: #b0233f; }
+.langue-es { background: #fff4d6; color: #8a6100; }
+.cadenas { font-size: 0.85rem; }
+
+.avis-flottant { position: fixed; right: 1.5rem; bottom: 1.5rem; z-index: 50; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12); }
+
+/* Fiche */
+.prise-en-charge { display: flex; align-items: center; background: #fff; border: 1px solid #e6e2ef; border-radius: 0.6rem; padding: 0.6rem 0.9rem; }
+.bandeau-confidentiel { border-left: 4px solid #d6304f; }
+.infos th { width: 160px; color: #7a7487; font-weight: 500; }
+.infos td, .infos th { border: none; padding: 0.35rem 0.5rem; }
+.transcription { background: #f8f6fc; border-left: 3px solid var(--violet); padding: 0.8rem 1rem; font-style: italic; white-space: pre-wrap; }
+
+.notes-rapides { display: grid; gap: 0.5rem; }
+.notes-rapides .note {
+  height: auto; white-space: normal; text-align: left; justify-content: space-between;
+  gap: 0.75rem; padding: 0.6rem 0.8rem;
+}
+.notes-rapides .statut-resultant { font-size: 0.75rem; opacity: 0.75; white-space: nowrap; }
+
+.historique { list-style: none; margin: 0; border-left: 2px solid #e6e2ef; padding-left: 1rem; }
+.historique li { position: relative; padding: 0.45rem 0; display: grid; grid-template-columns: 150px 150px 1fr; gap: 0.5rem; font-size: 0.9rem; }
+.historique li::before { content: ''; position: absolute; left: -1.33rem; top: 0.8rem; width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--violet); }
+.historique .quand { color: #7a7487; }
+.historique .qui { font-weight: 600; }
+
+.boite-confidentielle { border: 1px solid #f3b7c3; background: #fff7f9; }
+
+@media (max-width: 768px) {
+  .historique li { grid-template-columns: 1fr; gap: 0; }
+}
+
+/* Texte blanc lisible sur les boutons violets */
+.button.is-primary, .button.is-primary:hover, .button.is-primary:focus { color: #fff; }
