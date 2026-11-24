@@ -6,6 +6,8 @@ L'application regroupe en un seul endroit les messages des 4 boîtes vocales et 
 
 > ⚠️ **Toutes les données sont fictives.** N'entrez jamais de vraies informations de clientes dans ce prototype.
 
+![Connexion](docs/captures/connexion.jpg)
+
 ![Tableau des appels](docs/captures/tableau.jpg)
 
 ## Fonctionnalités
@@ -21,6 +23,10 @@ L'application regroupe en un seul endroit les messages des 4 boîtes vocales et 
 - Filtres par statut, service (avec couleurs) et langue
 - **Recherche par numéro de téléphone** dans tous les appels, même anciens
 - Administration : modifier les notes rapides, les services et leurs couleurs, les comptes de l'équipe
+- **Interface professionnelle** : barre latérale, logo, couleurs aubergine et framboise, police Atkinson Hyperlegible Next (conçue pour la lisibilité), icônes Lucide, adaptée aux téléphones ; le temps d'attente de chaque appel change de couleur avec l'ancienneté
+- **Interface bilingue** : bouton **FR / EN** dans la barre du haut (et sur la page de connexion), mémorisé sur chaque ordinateur. Les notes rapides et les noms des services restent dans la langue où l'administratrice les a écrits.
+
+![Interface en anglais](docs/captures/tableau-en.jpg)
 
 | Fiche d'un appel | Recherche par numéro |
 | --- | --- |
@@ -30,22 +36,23 @@ L'application regroupe en un seul endroit les messages des 4 boîtes vocales et 
 
 | Partie | Outils |
 | --- | --- |
-| Front-end | React 19 (Vite), React Router, Bulma CSS, socket.io-client |
-| Back-end | Node.js, Express, Socket.io, jsonwebtoken, bcryptjs |
+| Front-end | React 19 (Vite), Redux Toolkit, Axios, React Router, Bulma CSS, Lucide (icônes), socket.io-client |
+| Back-end | Node.js, Express (modèle MVC, modules ES), Socket.io, jsonwebtoken, bcryptjs |
 | Base de données | MySQL (mysql2) – fonctionne avec XAMPP |
+| Tests | Vitest, Testing Library, Playwright, Postman |
 
 ## Installation (à faire une seule fois)
 
 **Prérequis :** [Node.js](https://nodejs.org) 20 ou plus, et MySQL démarré (dans XAMPP : bouton *Start* à côté de MySQL).
 
 ```bash
-# 1. Installer les dépendances (racine, serveur et client)
+# 1. Installer les dépendances (racine, backend et frontend)
 npm run setup
 
 # 2. Créer le fichier de configuration du serveur
-#    Windows :     copy server\.env.example server\.env
-#    Mac / Linux : cp server/.env.example server/.env
-#    Puis ouvrez server/.env et changez JWT_SECRET (et DB_PASSWORD si besoin)
+#    Windows :     copy backend\.env.example backend\.env
+#    Mac / Linux : cp backend/.env.example backend/.env
+#    Puis ouvrez backend/.env et changez JWT_SECRET (et DB_PASSWORD si besoin)
 
 # 3. Créer la base de données avec les données fictives
 npm run db:init
@@ -57,7 +64,7 @@ npm run db:init
 npm run dev
 ```
 
-Ouvrez **http://localhost:5173**. Le serveur tourne sur le port 4000 ; Vite lui transmet les requêtes `/api` et `/socket.io`.
+Ouvrez **http://localhost:5173** (le front-end). Le back-end tourne sur le port 4000 ; Vite lui transmet les requêtes `/api` et `/socket.io`.
 
 ### Comptes de démonstration
 
@@ -82,22 +89,54 @@ Pour remettre les données à zéro : `npm run db:init`.
 
 ```
 clinique-appels/
-├── client/                    Front-end React
-│   └── src/
-│       ├── pages/             Connexion, Tableau, NouvelAppel, Fiche, Archives, Admin
-│       ├── components/        Navigation, étiquettes (statut, service, langue)
-│       ├── AuthContext.jsx    Connexion + Socket.io partagés dans l'app
-│       ├── api.js             Appels à l'API avec le jeton
-│       └── styles.css
-├── server/                    Back-end Express
-│   ├── db/schema.sql          Les 5 tables
-│   ├── db/seed.js             Crée la base et les données fictives
-│   └── src/
-│       ├── index.js           Démarrage du serveur
-│       ├── auth.js            Login, jetons JWT, droits
-│       ├── temps-reel.js      Socket.io
-│       └── routes/            appels.js, configuration.js
-└── docs/captures/             Captures d'écran
+├── frontend/                      Front-end : React (Vite) + Redux Toolkit + Axios + Bulma
+│   ├── src/
+│   │   ├── pages/                 Connexion, Tableau, NouvelAppel, Fiche, Archives, Admin
+│   │   ├── components/            Navigation (barre latérale), Logo, étiquettes (statut, service, langue)
+│   │   ├── services/              api.js (instance Axios), authService, appelsService,
+│   │   │                          configurationService, socket.js (Socket.io)
+│   │   ├── store/                 store.js + slices Redux : authSlice, appelsSlice, configurationSlice
+│   │   ├── hooks/tempsReel.js     Temps réel et déconnexion automatique
+│   │   ├── i18n.jsx               Textes français et anglais + bouton FR/EN
+│   │   └── test/                  Configuration des tests Vitest
+│   ├── e2e/parcours.spec.js       Tests de bout en bout (Playwright)
+│   └── playwright.config.js
+├── backend/                       Back-end : Express (MVC) + MySQL + Socket.io
+│   ├── index.js                   Point d'entrée
+│   ├── config/Database.js         Connexion MySQL (mysql2)
+│   ├── models/                    Requêtes SQL : AppelModel, ActionModel, NoteRapideModel,
+│   │                              ServiceModel, UtilisateurModel
+│   ├── controllers/               Règles de gestion : AppelController, AuthController,
+│   │                              ConfigurationController
+│   ├── routes/                    URL de l'API : AppelRoutes, AuthRoutes, ConfigurationRoutes
+│   ├── middleware/auth.js         Jetons JWT et droits (connexion, admin)
+│   ├── socket/tempsReel.js        Socket.io
+│   ├── db/schema.sql              Les 5 tables
+│   ├── db/seed.js                 Crée la base et les données fictives
+│   └── tests/                     Collection Postman
+└── docs/captures/                 Captures d'écran
+```
+
+Le chemin d'une requête : **page React → service Axios → route Express → contrôleur → modèle → MySQL**, puis la réponse remonte, et Socket.io prévient les autres écrans.
+
+## Tests
+
+| Type | Outil | Commande | Ce qui est vérifié |
+| --- | --- | --- | --- |
+| Tests unitaires | Vitest + Testing Library | `npm test` | Reducers Redux (appels, connexion), étiquettes FR/EN, écran de connexion avec le service simulé |
+| Tests de bout en bout | Playwright | `npm run test:e2e` | Connexion, temps réel entre deux personnes, prise en charge, notes rapides, recherche par numéro, bouton FR/EN, droits admin |
+| Tests d'API | Postman (ou cURL) | Importer `backend/tests/clinique-appels.postman_collection.json` | 17 requêtes, statuts 200, 201, 400, 401 et 404 |
+
+Avant les tests de bout en bout (une seule fois) : MySQL démarré, `npm run db:init`, puis `npx playwright install chromium` dans `frontend/`.
+
+Exemples cURL :
+
+```bash
+# Connexion : copiez le "jeton" de la réponse
+curl -X POST http://localhost:4000/api/auth/login -H "Content-Type: application/json" -d '{"courriel":"admin@clinique.test","mot_de_passe":"Demo123!"}'
+
+# Liste des appels actifs
+curl http://localhost:4000/api/appels -H "Authorization: Bearer VOTRE_JETON"
 ```
 
 ## API
@@ -123,7 +162,7 @@ Toutes les routes, sauf la connexion, demandent l'en-tête `Authorization: Beare
 - Mots de passe hachés avec bcrypt, jamais stockés en clair
 - Jetons JWT signés, valides 8 h ; Socket.io refuse les connexions sans jeton
 - Requêtes SQL paramétrées (protection contre l'injection SQL)
-- Secrets dans `server/.env`, exclu de Git
+- Secrets dans `backend/.env`, exclu de Git
 - Rôles : seules les administratrices modifient la configuration et les comptes
 
 Pour une vraie mise en service, la clinique devra choisir l'hébergement des données avec sa personne responsable des renseignements personnels.
@@ -139,7 +178,6 @@ git remote add origin https://github.com/VOTRE-COMPTE/clinique-appels.git
 git push -u origin main
 ```
 
-Vérifiez avant le premier `git push` que `server/.env` n'apparaît **pas** dans `git status`.
 
 ## Utilisation de l'IA générative
 

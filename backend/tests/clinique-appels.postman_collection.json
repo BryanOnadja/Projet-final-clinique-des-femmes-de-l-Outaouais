@@ -1,0 +1,772 @@
+{
+  "info": {
+    "name": "Suivi des appels – Clinique des femmes de l'Outaouais",
+    "description": "Tests de l'API Express (SED 2515). Lancez le back-end (npm run dev), puis « Run collection ». La première requête enregistre le jeton utilisé par les suivantes.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Connexion",
+      "item": [
+        {
+          "name": "Connexion réussie (admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courriel\": \"admin@clinique.test\",\n  \"mot_de_passe\": \"Demo123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Reçoit un jeton\", function () {",
+                  "  const r = pm.response.json();",
+                  "  pm.expect(r.jeton).to.be.a(\"string\");",
+                  "  pm.expect(r.utilisateur.role).to.eql(\"admin\");",
+                  "  pm.collectionVariables.set(\"jeton\", r.jeton); // utilisé par toutes les requêtes suivantes",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mauvais mot de passe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courriel\": \"admin@clinique.test\",\n  \"mot_de_passe\": \"mauvais\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 401\", function () {",
+                  "  pm.response.to.have.status(401);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Champs manquants",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"courriel\": \"admin@clinique.test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Appels",
+      "item": [
+        {
+          "name": "Liste sans jeton (refusé)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appels"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 401\", function () {",
+                  "  pm.response.to.have.status(401);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Liste des appels actifs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jeton}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appels"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Renvoie un tableau d'appels non archivés\", function () {",
+                  "  const appels = pm.response.json();",
+                  "  pm.expect(appels).to.be.an(\"array\");",
+                  "  appels.forEach(a => pm.expect(a.archive).to.eql(0));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Recherche par numéro (actifs + archives)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jeton}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appels?archive=tous&q=8195550142",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appels"
+              ],
+              "query": [
+                {
+                  "key": "archive",
+                  "value": "tous"
+                },
+                {
+                  "key": "q",
+                  "value": "8195550142"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Tous les résultats ont ce numéro\", function () {",
+                  "  pm.response.json().forEach(a => pm.expect(a.telephone_chiffres).to.include(\"8195550142\"));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer un appel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jeton}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appels"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source\": \"boite_2\",\n  \"nom_appelant\": \"Test Postman\",\n  \"telephone\": \"819-555-0199\",\n  \"langue\": \"en\",\n  \"motif\": \"Test d'API\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"L'appel créé est nouveau\", function () {",
+                  "  const a = pm.response.json();",
+                  "  pm.expect(a.statut).to.eql(\"nouveau\");",
+                  "  pm.collectionVariables.set(\"appelId\", a.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer un appel invalide (sans téléphone)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jeton}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appels"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"source\": \"boite_1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lire la fiche créée",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jeton}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appels/{{appelId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appels",
+                "{{appelId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Contient l'appel et son historique\", function () {",
+                  "  const r = pm.response.json();",
+                  "  pm.expect(r.appel.nom_appelant).to.eql(\"Test Postman\");",
+                  "  pm.expect(r.actions.length).to.be.at.least(1);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lire un appel qui n'existe pas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jeton}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appels/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appels",
+                "999999"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404\", function () {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Prendre l'appel en charge",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jeton}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appels/{{appelId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appels",
+                "{{appelId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prise_en_charge\": \"moi\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Passe à « en cours »\", function () {",
+                  "  pm.expect(pm.response.json().statut).to.eql(\"en_cours\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ajouter une note rapide (Cliente rejointe)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jeton}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appels/{{appelId}}/actions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appels",
+                "{{appelId}}",
+                "actions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note_rapide_id\": 7\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"L'appel est réglé et archivé\", function () {",
+                  "  const a = pm.response.json().appel;",
+                  "  pm.expect(a.statut).to.eql(\"regle\");",
+                  "  pm.expect(a.archive).to.eql(1);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ajouter une note vide",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jeton}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/appels/{{appelId}}/actions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "appels",
+                "{{appelId}}",
+                "actions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texte\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 400\", function () {",
+                  "  pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Configuration",
+      "item": [
+        {
+          "name": "Notes rapides",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jeton}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/notes-rapides",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "notes-rapides"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Services",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jeton}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "services"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modifier un service qui n'existe pas",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jeton}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "services",
+                "999999"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Inexistant\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404\", function () {",
+                  "  pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Comptes de l'équipe (admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jeton}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/utilisateurs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "utilisateurs"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test(\"Aucun mot de passe n'est renvoyé\", function () {",
+                  "  pm.response.json().forEach(u => pm.expect(u).to.not.have.property(\"mot_de_passe_hash\"));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api"
+    },
+    {
+      "key": "jeton",
+      "value": ""
+    },
+    {
+      "key": "appelId",
+      "value": ""
+    }
+  ]
+}

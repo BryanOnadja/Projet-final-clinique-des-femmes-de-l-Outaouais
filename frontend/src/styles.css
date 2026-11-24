@@ -1,0 +1,401 @@
+/* ==========================================================================
+   Suivi des appels — identité visuelle
+   Aubergine (structure, actions) + framboise (logo, appels qui attendent).
+   Police : Atkinson Hyperlegible Next, conçue pour la lisibilité.
+   ========================================================================== */
+
+:root {
+  --aubergine-950: #1e1029;
+  --aubergine-900: #2a1638;
+  --aubergine-800: #3a2050;
+  --aubergine-700: #4b2a63;
+  --aubergine-600: #5e3a7a;
+  --aubergine-100: #ece4f3;
+  --aubergine-050: #f6f2fa;
+  --framboise: #c2366b;
+  --framboise-050: #fcedf2;
+
+  --fond: #f6f5f8;
+  --surface: #ffffff;
+  --trait: #e6e1ec;
+  --trait-fort: #d4cddd;
+  --encre: #231b2e;
+  --encre-douce: #675f74;
+  --encre-pale: #938ca0;
+
+  --statut-nouveau: #c2366b;
+  --statut-en_cours: #a86a12;
+  --statut-en_attente: #3a67a1;
+  --statut-regle: #2a7d55;
+
+  --rayon: 8px;
+  --rayon-grand: 12px;
+  --ombre: 0 1px 2px rgba(42, 22, 56, 0.06), 0 1px 1px rgba(42, 22, 56, 0.04);
+  --police: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+
+  /* Bulma */
+  --bulma-family-primary: var(--police);
+  --bulma-primary-h: 276deg;
+  --bulma-primary-s: 41%;
+  --bulma-primary-l: 28%;
+  --bulma-link-h: 276deg;
+  --bulma-link-s: 35%;
+  --bulma-link-l: 36%;
+  --bulma-radius: var(--rayon);
+  --bulma-body-color: var(--encre);
+  --bulma-text: var(--encre);
+  --bulma-text-strong: var(--encre);
+  --bulma-border: var(--trait-fort);
+}
+
+html {
+  background: var(--fond);
+  color: var(--encre);
+  color-scheme: light;
+  font-family: var(--police);
+  font-size: 16px;
+}
+body { min-height: 100vh; font-family: var(--police); }
+button, input, select, textarea { font-family: var(--police); }
+
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--framboise) 55%, transparent); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+.texte-discret { color: var(--encre-pale); }
+.is-nowrap { white-space: nowrap; }
+
+/* ---------- Boutons (Bulma retouché) ---------- */
+.button { font-weight: 600; gap: 0.45rem; border-radius: var(--rayon); }
+.button.is-primary { background: var(--aubergine-700); color: #fff; border-color: transparent; }
+.button.is-primary:hover, .button.is-primary:focus-visible { background: var(--aubergine-600); color: #fff; }
+.button.is-primary:active { background: var(--aubergine-800); }
+.button.is-primary.is-outlined { background: transparent; color: var(--aubergine-700); border: 1.5px solid var(--aubergine-700); }
+.button.is-primary.is-outlined:hover:not([disabled]) { background: var(--aubergine-050); color: var(--aubergine-700); }
+.button.is-white { background: transparent; border: 1px solid var(--trait-fort); color: var(--encre); }
+.button.is-white:hover { background: var(--aubergine-050); }
+.input, .textarea, .select select { border-color: var(--trait-fort); box-shadow: none; color: var(--encre); }
+.input:focus, .textarea:focus, .select select:focus {
+  border-color: var(--aubergine-600);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--aubergine-600) 18%, transparent);
+}
+.select:not(.is-multiple):not(.is-loading)::after { border-color: var(--aubergine-600); }
+.label { color: var(--encre); font-weight: 600; }
+.help { color: var(--encre-douce); }
+
+/* ==========================================================================
+   Coquille : barre latérale + contenu
+   ========================================================================== */
+.coquille { display: grid; grid-template-columns: 264px 1fr; min-height: 100vh; }
+.contenu { min-width: 0; }
+.contenu-interieur { max-width: 1320px; margin: 0 auto; padding: 2rem 2.25rem 3rem; }
+
+.barre-laterale {
+  position: sticky; top: 0; height: 100vh;
+  display: flex; flex-direction: column;
+  background: var(--aubergine-900);
+  color: #e9e1f0;
+  padding: 1.25rem 0.9rem 1rem;
+}
+.marque { display: flex; align-items: center; gap: 0.75rem; color: inherit; }
+.marque-laterale { padding: 0.25rem 0.6rem 1.5rem; color: #fff; }
+.marque-laterale:hover { color: #fff; }
+.marque-nom { display: block; font-weight: 700; font-size: 1.05rem; line-height: 1.2; letter-spacing: -0.005em; }
+.marque-clinique { display: block; font-size: 0.78rem; line-height: 1.3; color: #b9a9c9; margin-top: 0.15rem; }
+
+.menu-principal { display: flex; flex-direction: column; gap: 0.2rem; }
+.lien-nav {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.62rem 0.75rem; border-radius: var(--rayon);
+  color: #d8cce3; font-weight: 600;
+}
+.lien-nav svg { color: #a995bd; flex-shrink: 0; }
+.lien-nav:hover { background: var(--aubergine-800); color: #fff; }
+.lien-nav.est-actif { background: #fff; color: var(--aubergine-900); }
+.lien-nav.est-actif svg { color: var(--framboise); }
+
+.pied-lateral { margin-top: auto; display: flex; flex-direction: column; gap: 0.85rem; padding-top: 1rem; border-top: 1px solid var(--aubergine-800); }
+.ligne-pied { display: flex; align-items: center; justify-content: space-between; padding: 0 0.35rem; }
+.direct { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.85rem; color: #b9a9c9; }
+.direct .point { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: #8b7d99; }
+.direct.est-actif { color: #9fe2bf; }
+.direct.est-actif .point { background: #4fd18b; box-shadow: 0 0 0 3px rgba(79, 209, 139, 0.18); }
+
+.carte-utilisatrice { display: flex; align-items: center; gap: 0.7rem; padding: 0 0.35rem; }
+.identite { display: flex; flex-direction: column; min-width: 0; }
+.identite-nom { color: #fff; font-weight: 600; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.identite-role { font-size: 0.78rem; color: #b9a9c9; }
+.bouton-deconnexion {
+  display: flex; align-items: center; gap: 0.6rem; width: 100%;
+  background: none; border: 1px solid var(--aubergine-800); border-radius: var(--rayon);
+  color: #d8cce3; font-weight: 600; font-size: 0.88rem; padding: 0.5rem 0.75rem; cursor: pointer;
+}
+.bouton-deconnexion:hover { background: var(--aubergine-800); color: #fff; }
+
+.avatar {
+  display: inline-grid; place-items: center; flex-shrink: 0;
+  width: 2.25rem; height: 2.25rem; border-radius: 50%;
+  background: var(--aubergine-100); color: var(--aubergine-700);
+  font-weight: 700; font-size: 0.82rem; letter-spacing: 0.02em;
+}
+.barre-laterale .avatar { background: var(--framboise); color: #fff; }
+.avatar-petit { width: 1.9rem; height: 1.9rem; font-size: 0.72rem; }
+
+/* Sélecteur FR | EN et autres contrôles segmentés */
+.segmente { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--aubergine-050); border: 1px solid var(--trait); }
+.segment {
+  border: 0; background: none; cursor: pointer;
+  padding: 0.28rem 0.7rem; border-radius: 999px;
+  font-weight: 700; font-size: 0.78rem; color: var(--encre-douce);
+}
+.segment.est-actif { background: var(--aubergine-700); color: #fff; }
+.segmente-sombre { background: var(--aubergine-950); border-color: var(--aubergine-800); }
+.segmente-sombre .segment { color: #b9a9c9; }
+.segmente-sombre .segment.est-actif { background: #fff; color: var(--aubergine-900); }
+.segmente-large { border-radius: var(--rayon); }
+.segmente-large .segment { padding: 0.5rem 1rem; font-size: 0.92rem; border-radius: 6px; }
+
+.barre-mobile { display: none; }
+.voile { display: none; }
+
+/* ==========================================================================
+   En-têtes et panneaux
+   ========================================================================== */
+.entete-page { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.titre-page { font-size: 1.75rem; font-weight: 700; line-height: 1.2; letter-spacing: -0.015em; color: var(--encre); display: flex; align-items: center; gap: 0.6rem; }
+.sous-titre-page { color: var(--encre-douce); margin-top: 0.25rem; }
+
+.panneau { background: var(--surface); border: 1px solid var(--trait); border-radius: var(--rayon-grand); box-shadow: var(--ombre); }
+.panneau-padding { padding: 1.35rem 1.5rem; }
+.panneau + .panneau, .colonne-principale > .panneau + .panneau, .colonne-suivi > .panneau + .panneau { margin-top: 1rem; }
+.titre-section { display: flex; align-items: center; gap: 0.5rem; font-size: 1.02rem; font-weight: 700; color: var(--encre); margin-bottom: 0.9rem; }
+.titre-section svg { color: var(--aubergine-600); }
+.aide-section { color: var(--encre-douce); margin-bottom: 1rem; max-width: 70ch; }
+
+.message-erreur, .message-succes {
+  display: flex; align-items: center; gap: 0.55rem;
+  padding: 0.7rem 0.9rem; border-radius: var(--rayon); margin-bottom: 1rem; font-weight: 600;
+}
+.message-erreur { background: var(--framboise-050); color: #9c2253; }
+.message-succes { background: #e8f5ee; color: #1f6845; }
+
+/* ==========================================================================
+   Étiquettes
+   ========================================================================== */
+.pilule {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.2rem 0.6rem; border-radius: 999px;
+  font-size: 0.82rem; font-weight: 700; line-height: 1.4; white-space: nowrap;
+}
+.pilule .pastille, .onglet .pastille, .resultat .pastille { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: currentColor; }
+.statut-nouveau { color: var(--statut-nouveau); }
+.statut-en_cours { color: var(--statut-en_cours); }
+.statut-en_attente { color: var(--statut-en_attente); }
+.statut-regle { color: var(--statut-regle); }
+.pilule.statut-nouveau { background: #fcebf1; }
+.pilule.statut-en_cours { background: #fbf1df; }
+.pilule.statut-en_attente { background: #e9f0f9; }
+.pilule.statut-regle { background: #e6f4ec; }
+.pilule-neutre { background: #eeecf1; color: var(--encre-douce); }
+.pilule-info { background: var(--aubergine-050); color: var(--aubergine-600); }
+
+.service { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.9rem; color: var(--encre); }
+.tableau-appels .service { min-width: 8rem; }
+.service .pastille { width: 0.6rem; height: 0.6rem; border-radius: 3px; flex-shrink: 0; }
+.langue {
+  display: inline-block; min-width: 2.1rem; text-align: center;
+  padding: 0.12rem 0.4rem; border-radius: 6px;
+  border: 1px solid var(--trait-fort); color: var(--encre-douce);
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em;
+}
+.cadenas { display: inline-grid; place-items: center; width: 1.45rem; height: 1.45rem; border-radius: 50%; background: var(--framboise-050); color: var(--framboise); vertical-align: middle; }
+
+/* ==========================================================================
+   Tableau des appels
+   ========================================================================== */
+.onglets-statut { display: flex; gap: 0.35rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.onglet {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.55rem 0.95rem; border-radius: 999px; cursor: pointer;
+  border: 1px solid transparent; background: none;
+  font-weight: 600; font-size: 0.95rem; color: var(--encre-douce);
+}
+.onglet:hover { background: var(--aubergine-050); color: var(--encre); }
+.onglet.est-actif { background: var(--surface); border-color: var(--trait-fort); color: var(--encre); box-shadow: var(--ombre); }
+.onglet .nombre { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--encre); background: #ecebef; border-radius: 999px; padding: 0 0.5rem; font-size: 0.82rem; }
+.onglet.est-actif .nombre { background: var(--aubergine-700); color: #fff; }
+.onglet-nouveau .pastille { color: var(--statut-nouveau); }
+.onglet-en_cours .pastille { color: var(--statut-en_cours); }
+.onglet-en_attente .pastille { color: var(--statut-en_attente); }
+
+.barre-filtres { display: flex; gap: 0.6rem; padding: 0.9rem 1rem; border-bottom: 1px solid var(--trait); flex-wrap: wrap; align-items: center; }
+.barre-filtres .recherche { flex: 1 1 260px; }
+.barre-filtres .icon { color: var(--encre-pale); }
+
+.table-container { border-radius: var(--rayon-grand); }
+.panneau .table-container { margin: 0; }
+.tableau-appels { background: transparent; }
+.tableau-appels thead th {
+  font-size: 0.8rem; font-weight: 600; color: var(--encre-pale); white-space: nowrap;
+  border-bottom: 1px solid var(--trait); padding: 0.7rem 0.85rem; background: #fbfafc;
+}
+.tableau-appels td { vertical-align: middle; padding: 0.8rem 0.85rem; border-color: #efecf2; font-size: 0.93rem; }
+.tableau-appels tbody tr { cursor: pointer; transition: background-color 0.15s; }
+.tableau-appels.is-hoverable tbody tr:not(.is-selected):hover { background: var(--aubergine-050); }
+.tableau-appels tbody tr:last-child td { border-bottom: 0; }
+.tableau-appels .motif { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--encre-douce); }
+.nom-appelante { font-weight: 700; color: var(--encre); }
+a.nom-appelante:hover { color: var(--aubergine-600); text-decoration: underline; }
+.telephone, .source { display: block; font-size: 0.82rem; color: var(--encre-pale); font-variant-numeric: tabular-nums; }
+
+/* Temps d'attente : le seul élément qui « chauffe » avec le temps */
+.attente { display: block; font-weight: 700; font-size: 1.02rem; font-variant-numeric: tabular-nums; }
+.attente-recente { color: var(--encre); }
+.attente-moyenne { color: var(--statut-en_cours); }
+.attente-longue { color: var(--framboise); }
+
+.ligne-flash { animation: flash 2.5s ease-out; }
+@keyframes flash { 0%, 30% { background: #fff3d1; } 100% { background: transparent; } }
+
+.etat-vide { display: grid; justify-items: center; gap: 0.35rem; padding: 3.5rem 1rem; text-align: center; color: var(--encre-douce); }
+.etat-vide svg { color: var(--statut-regle); margin-bottom: 0.35rem; }
+.etat-vide-titre { font-weight: 700; font-size: 1.08rem; color: var(--encre); }
+
+.avis-flottant {
+  position: fixed; right: 1.5rem; bottom: 1.5rem; z-index: 50;
+  display: flex; align-items: center; gap: 0.6rem;
+  background: var(--aubergine-900); color: #fff; font-weight: 600;
+  padding: 0.85rem 1.1rem; border-radius: var(--rayon-grand);
+  box-shadow: 0 10px 30px rgba(42, 22, 56, 0.25);
+  animation: apparition 0.25s ease-out;
+}
+.avis-flottant svg { color: #f3a6c3; }
+@keyframes apparition { from { opacity: 0; transform: translateY(8px); } }
+
+/* ==========================================================================
+   Fiche d'un appel
+   ========================================================================== */
+.lien-retour { display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600; font-size: 0.9rem; color: var(--encre-douce); margin-bottom: 0.9rem; }
+.lien-retour:hover { color: var(--aubergine-600); }
+.entete-fiche { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.meta-fiche { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.6rem; flex-wrap: wrap; }
+
+.prise-en-charge { display: flex; align-items: center; gap: 0.75rem; background: var(--surface); border: 1px solid var(--trait); border-radius: var(--rayon-grand); padding: 0.6rem 0.75rem 0.6rem 0.65rem; box-shadow: var(--ombre); }
+.prise-texte { display: flex; flex-direction: column; line-height: 1.25; font-size: 0.92rem; }
+.prise-texte .texte-discret { font-size: 0.78rem; }
+
+.bandeau-confidentiel {
+  display: flex; gap: 0.8rem; align-items: flex-start;
+  background: var(--framboise-050); border: 1px solid #f3c3d4; color: #7d1a42;
+  border-radius: var(--rayon-grand); padding: 0.9rem 1.1rem; margin-bottom: 1.25rem;
+}
+.bandeau-confidentiel svg { color: var(--framboise); flex-shrink: 0; margin-top: 0.1rem; }
+.bandeau-confidentiel strong { color: #7d1a42; }
+
+.grille-fiche { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 1.25rem; align-items: start; }
+.colonne-suivi { position: sticky; top: 1.25rem; }
+
+.infos { display: grid; grid-template-columns: 150px 1fr; gap: 0.6rem 1rem; margin: 0; }
+.infos dt { color: var(--encre-pale); font-size: 0.9rem; }
+.infos dd { margin: 0; }
+.telephone-fiche { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 1.2rem; font-weight: 700; color: var(--aubergine-700); font-variant-numeric: tabular-nums; }
+.telephone-fiche:hover { color: var(--aubergine-600); }
+
+.transcription { margin: 0; background: var(--aubergine-050); border-left: 3px solid var(--aubergine-600); border-radius: 0 var(--rayon) var(--rayon) 0; padding: 0.9rem 1.1rem; font-style: italic; white-space: pre-wrap; max-width: 75ch; color: var(--encre); }
+
+.historique { list-style: none; margin: 0; padding: 0; position: relative; }
+.historique::before { content: ''; position: absolute; left: 0.95rem; top: 0.5rem; bottom: 0.5rem; width: 2px; background: var(--trait); }
+.historique li { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 0.8rem; padding: 0.45rem 0; }
+.historique .avatar { position: relative; z-index: 1; box-shadow: 0 0 0 3px var(--surface); }
+.historique .quoi { color: var(--encre); }
+.qui-quand { font-size: 0.82rem; color: var(--encre-pale); margin-top: 0.1rem; }
+.qui-quand .qui { font-weight: 600; color: var(--encre-douce); margin-right: 0.35rem; }
+
+.champs-suivi { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.85rem; }
+.champs-suivi .field { margin: 0; }
+
+.notes-rapides { display: grid; gap: 0.4rem; }
+.note {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+  text-align: left; cursor: pointer; width: 100%;
+  padding: 0.6rem 0.75rem; border-radius: var(--rayon);
+  border: 1px solid var(--trait); background: var(--surface); color: var(--encre);
+  font-size: 0.92rem; line-height: 1.35;
+}
+.note:hover { border-color: var(--aubergine-600); background: var(--aubergine-050); }
+.note.est-choisie { border-color: var(--aubergine-700); background: var(--aubergine-050); box-shadow: inset 3px 0 0 var(--aubergine-700); }
+.resultat { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+.complement { margin-top: 0.9rem; }
+
+/* ==========================================================================
+   Nouvel appel, archives, admin
+   ========================================================================== */
+.boite-confidentialite.est-active { border-color: #f3c3d4; background: #fffafc; }
+.case-confidentialite { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; cursor: pointer; }
+.case-confidentialite input { width: 1.1rem; height: 1.1rem; accent-color: var(--framboise); }
+.case-confidentialite svg { color: var(--framboise); }
+.boite-confidentialite .field { margin-top: 0.9rem; }
+.formulaire-appel .buttons { margin-top: 1rem; }
+
+.recherche-archives { margin-bottom: 1.25rem; }
+.recherche-archives .icon { color: var(--encre-pale); height: 3rem !important; }
+.resume-resultats { color: var(--encre-douce); margin-bottom: 0.75rem; font-weight: 600; }
+
+.ligne-inactive td { color: var(--encre-pale); }
+.panneau .table td, .panneau .table th { border-color: #efecf2; }
+
+/* ==========================================================================
+   Connexion
+   ========================================================================== */
+.page-connexion { min-height: 100vh; display: grid; grid-template-columns: minmax(340px, 5fr) 7fr; }
+.panneau-marque {
+  background: var(--aubergine-900); color: #e9e1f0;
+  padding: 3.5rem 3rem; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 0.5rem;
+}
+.panneau-marque .logo { flex-shrink: 0; margin-top: auto; }
+.titre-marque { font-size: 2.6rem; font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; color: #fff; margin-top: 1.5rem; }
+.clinique-marque { color: #f3a6c3; font-weight: 600; font-size: 1.05rem; }
+.accroche { font-size: 1.12rem; line-height: 1.55; color: #d8cce3; max-width: 34ch; margin-top: 1.25rem; }
+.note-prototype { margin-top: auto; padding-top: 2.5rem; font-size: 0.85rem; color: #b9a9c9; max-width: 44ch; }
+.note-prototype code { background: var(--aubergine-800); color: #fff; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.82rem; }
+
+.panneau-formulaire { display: flex; flex-direction: column; padding: 1.5rem 2rem; background: var(--surface); }
+.haut-formulaire { display: flex; justify-content: flex-end; }
+.formulaire-connexion { width: 100%; max-width: 400px; margin: auto; padding: 2rem 0; }
+.titre-formulaire { font-size: 1.6rem; font-weight: 700; margin-bottom: 1.5rem; letter-spacing: -0.01em; }
+
+/* ==========================================================================
+   Tablettes et téléphones
+   ========================================================================== */
+@media (max-width: 1100px) {
+  .grille-fiche { grid-template-columns: 1fr; }
+  .colonne-suivi { position: static; }
+}
+
+@media (max-width: 860px) {
+  .coquille { grid-template-columns: 1fr; }
+  .barre-mobile {
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 30;
+    background: var(--aubergine-900); color: #fff; padding: 0.7rem 1rem;
+  }
+  .barre-mobile .marque { color: #fff; }
+  .bouton-icone { background: none; border: 0; color: #fff; padding: 0.35rem; cursor: pointer; display: grid; place-items: center; }
+  .barre-laterale {
+    position: fixed; inset: 0 auto 0 0; z-index: 40; width: 280px;
+    transform: translateX(-100%); transition: transform 0.2s ease-out;
+  }
+  .barre-laterale.est-ouverte { transform: none; }
+  .voile { display: block; position: fixed; inset: 0; z-index: 35; background: rgba(30, 16, 41, 0.45); }
+  .contenu-interieur { padding: 1.25rem 1rem 2.5rem; }
+  .titre-page { font-size: 1.45rem; }
+  .page-connexion { grid-template-columns: 1fr; }
+  .panneau-marque { padding: 2rem 1.5rem; }
+  .titre-marque { font-size: 2rem; margin-top: 1rem; }
+  .note-prototype { padding-top: 1.25rem; }
+  .infos { grid-template-columns: 1fr; gap: 0.15rem; }
+  .infos dd { margin-bottom: 0.6rem; }
+  .champs-suivi { grid-template-columns: 1fr; }
+}
