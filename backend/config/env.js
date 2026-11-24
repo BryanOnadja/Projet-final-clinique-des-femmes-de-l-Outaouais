@@ -1,0 +1,5 @@
+// Charge les variables de backend/.env (à importer en premier).
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+
+dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });

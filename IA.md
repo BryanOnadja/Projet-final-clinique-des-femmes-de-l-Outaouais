@@ -10,14 +10,18 @@ Ajoutez une entrée à chaque nouvelle utilisation.
 | 2026-11-20 | Claude | User stories du projet | « Les User Stories • Une User Story décrit un besoin du point de vue de l'utilisateur. En tant que [utilisateur] Je veux [objectif] Afin de [bénéfice]. je veux que tu me donnes la user stories du projet » |
 | 2026-11-20 | Claude | Première version du code (front-end React, back-end Express, base MySQL, Socket.io) | « puis qur tu as deja tout le plan et tout je veux du visel... donne moi alors le front end back end je vais faire un depot sur gitub et voir le fnctionnement » |
 | 2026-11-23 | Claude | Bouton FR/EN et traduction anglaise de l'interface | « es ce que l'application peut etre mise en anglais? » puis « oui un bouton » |
+| 2026-11-23 | Claude | Réorganisation selon les supports du cours (frontend/ et backend/, MVC, Axios, Redux Toolkit) et tests (Vitest, Playwright, Postman) | « lapplication doit avoir un frontend et un backend regarde les cours qui sont dans le dossier Sed2515 » puis « oui » |
 
 ## Ce que l'équipe a vérifié et compris
 
 À compléter par l'équipe avant l'oral : chaque membre doit pouvoir expliquer avec ses mots chaque fichier (voir la structure dans le README).
 
-- [ ] `server/src/routes/appels.js` – routes et historique
-- [ ] `server/src/auth.js` – bcrypt, JWT, middlewares
-- [ ] `server/src/temps-reel.js` – Socket.io
-- [ ] `client/src/AuthContext.jsx` – connexion, socket, inactivité
-- [ ] `client/src/i18n.jsx` – traductions et bouton FR/EN
-- [ ] `client/src/pages/*` – écrans React
+- [ ] `backend/models/*` – requêtes SQL et jointures
+- [ ] `backend/controllers/*` – règles de gestion (statuts, historique, notes rapides)
+- [ ] `backend/routes/*` et `backend/middleware/auth.js` – URL de l'API, bcrypt, JWT, droits
+- [ ] `backend/socket/tempsReel.js` et `frontend/src/hooks/tempsReel.js` – Socket.io
+- [ ] `frontend/src/store/*` – Redux Toolkit (slices, thunks)
+- [ ] `frontend/src/services/*` – Axios
+- [ ] `frontend/src/i18n.jsx` – traductions et bouton FR/EN
+- [ ] `frontend/src/pages/*` – écrans React
+- [ ] Tests : `frontend/src/**/*.test.*`, `frontend/e2e/`, `backend/tests/`

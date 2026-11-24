@@ -9,3 +9,7 @@ dist/
 .DS_Store
 .vscode/*
 !.vscode/extensions.json
+
+# Rapports de tests Playwright
+test-results/
+playwright-report/
