@@ -21,6 +21,9 @@ L'application regroupe en un seul endroit les messages des 4 boîtes vocales et 
 - Filtres par statut, service (avec couleurs) et langue
 - **Recherche par numéro de téléphone** dans tous les appels, même anciens
 - Administration : modifier les notes rapides, les services et leurs couleurs, les comptes de l'équipe
+- **Interface bilingue** : bouton **FR / EN** dans la barre du haut (et sur la page de connexion), mémorisé sur chaque ordinateur. Les notes rapides et les noms des services restent dans la langue où l'administratrice les a écrits.
+
+![Interface en anglais](docs/captures/tableau-en.jpg)
 
 | Fiche d'un appel | Recherche par numéro |
 | --- | --- |
@@ -87,6 +90,7 @@ clinique-appels/
 │       ├── pages/             Connexion, Tableau, NouvelAppel, Fiche, Archives, Admin
 │       ├── components/        Navigation, étiquettes (statut, service, langue)
 │       ├── AuthContext.jsx    Connexion + Socket.io partagés dans l'app
+│       ├── i18n.jsx           Textes français et anglais + bouton FR/EN
 │       ├── api.js             Appels à l'API avec le jeton
 │       └── styles.css
 ├── server/                    Back-end Express

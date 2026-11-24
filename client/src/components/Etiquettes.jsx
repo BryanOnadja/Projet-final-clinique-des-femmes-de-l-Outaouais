@@ -1,9 +1,10 @@
 // Petites étiquettes colorées réutilisées partout.
-import { LANGUES, STATUTS } from '../constantes'
+import { STATUTS } from '../constantes'
+import { useLangue } from '../i18n'
 
 export function EtiquetteStatut({ statut }) {
-  const s = STATUTS[statut] || { libelle: statut, classe: '' }
-  return <span className={`tag ${s.classe} is-light has-text-weight-semibold`}>{s.libelle}</span>
+  const { t } = useLangue()
+  return <span className={`tag ${STATUTS[statut] || ''} is-light has-text-weight-semibold`}>{t(`statut.${statut}`)}</span>
 }
 
 export function EtiquetteService({ nom, couleur }) {
@@ -17,9 +18,11 @@ export function EtiquetteService({ nom, couleur }) {
 }
 
 export function EtiquetteLangue({ langue }) {
-  return <span className={`tag langue langue-${langue}`} title={LANGUES[langue]}>{langue.toUpperCase()}</span>
+  const { t } = useLangue()
+  return <span className={`tag langue langue-${langue}`} title={t(`langue.${langue}`)}>{langue.toUpperCase()}</span>
 }
 
 export function Cadenas() {
-  return <span className="cadenas" title="Mesure de confidentialité demandée" aria-label="Confidentiel">🔒</span>
+  const { t } = useLangue()
+  return <span className="cadenas" title={t('confidentiel.titre')} aria-label={t('confidentiel.court')}>🔒</span>
 }

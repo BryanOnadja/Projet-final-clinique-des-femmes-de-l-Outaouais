@@ -2,17 +2,19 @@
 import { useEffect, useState } from 'react'
 import { api } from '../api'
 import { STATUTS } from '../constantes'
+import { useLangue } from '../i18n'
 
 export default function Admin() {
   const [onglet, setOnglet] = useState('notes')
+  const { t } = useLangue()
   return (
     <>
-      <h1 className="title is-4">Administration</h1>
+      <h1 className="title is-4">{t('admin.titre')}</h1>
       <div className="tabs is-boxed">
         <ul>
-          <li className={onglet === 'notes' ? 'is-active' : ''}><a onClick={() => setOnglet('notes')}>Notes rapides</a></li>
-          <li className={onglet === 'services' ? 'is-active' : ''}><a onClick={() => setOnglet('services')}>Services</a></li>
-          <li className={onglet === 'comptes' ? 'is-active' : ''}><a onClick={() => setOnglet('comptes')}>Comptes de l'équipe</a></li>
+          <li className={onglet === 'notes' ? 'is-active' : ''}><a onClick={() => setOnglet('notes')}>{t('admin.notes')}</a></li>
+          <li className={onglet === 'services' ? 'is-active' : ''}><a onClick={() => setOnglet('services')}>{t('admin.services')}</a></li>
+          <li className={onglet === 'comptes' ? 'is-active' : ''}><a onClick={() => setOnglet('comptes')}>{t('admin.comptes')}</a></li>
         </ul>
       </div>
       {onglet === 'notes' && <NotesRapides />}
@@ -23,16 +25,18 @@ export default function Admin() {
 }
 
 function Message({ texte, erreur }) {
+  const { tErreur } = useLangue()
   if (!texte) return null
-  return <p className={`notification is-light py-2 ${erreur ? 'is-danger' : 'is-success'}`}>{texte}</p>
+  return <p className={`notification is-light py-2 ${erreur ? 'is-danger' : 'is-success'}`}>{erreur ? tErreur(texte) : texte}</p>
 }
 
 function SelectStatut({ valeur, onChange }) {
+  const { t } = useLangue()
   return (
     <div className="select is-small is-fullwidth">
       <select value={valeur || ''} onChange={(e) => onChange(e.target.value || null)}>
-        <option value="">Ne change pas le statut</option>
-        {Object.entries(STATUTS).map(([v, s]) => <option key={v} value={v}>{s.libelle}</option>)}
+        <option value="">{t('admin.neChangePas')}</option>
+        {Object.keys(STATUTS).map((v) => <option key={v} value={v}>{t(`statut.${v}`)}</option>)}
       </select>
     </div>
   )
@@ -40,6 +44,7 @@ function SelectStatut({ valeur, onChange }) {
 
 // ---------- Notes rapides ----------
 function NotesRapides() {
+  const { t } = useLangue()
   const [notes, setNotes] = useState([])
   const [nouvelle, setNouvelle] = useState({ texte: '', statut_resultant: null })
   const [message, setMessage] = useState({})
@@ -52,7 +57,7 @@ function NotesRapides() {
   async function enregistrer(n) {
     try {
       await api(`/notes-rapides/${n.id}`, { methode: 'PATCH', corps: n })
-      setMessage({ texte: 'Note enregistrée : les boutons sont mis à jour chez toute l\'équipe.' })
+      setMessage({ texte: t('admin.noteEnregistree') })
       charger()
     } catch (err) { setMessage({ texte: err.message, erreur: true }) }
   }
@@ -62,33 +67,33 @@ function NotesRapides() {
     try {
       await api('/notes-rapides', { methode: 'POST', corps: nouvelle })
       setNouvelle({ texte: '', statut_resultant: null })
-      setMessage({ texte: 'Note ajoutée.' })
+      setMessage({ texte: t('admin.noteAjoutee') })
       charger()
     } catch (err) { setMessage({ texte: err.message, erreur: true }) }
   }
 
   return (
     <div className="box">
-      <p className="mb-4 has-text-grey">Ces textes apparaissent comme boutons sur chaque fiche d'appel. Le statut choisi est appliqué à l'appel quand on clique sur la note.</p>
+      <p className="mb-4 has-text-grey">{t('admin.notesAide')}</p>
       <Message {...message} />
       <table className="table is-fullwidth">
-        <thead><tr><th style={{ width: 70 }}>Ordre</th><th>Texte</th><th style={{ width: 220 }}>Statut donné à l'appel</th><th>Active</th><th /></tr></thead>
+        <thead><tr><th style={{ width: 70 }}>{t('admin.ordre')}</th><th>{t('admin.texte')}</th><th style={{ width: 240 }}>{t('admin.statutDonne')}</th><th>{t('admin.active')}</th><th /></tr></thead>
         <tbody>
           {notes.map((n) => (
             <tr key={n.id} className={n.actif ? '' : 'has-text-grey-light'}>
               <td><input className="input is-small" type="number" value={n.ordre} onChange={(e) => modifierLocal(n.id, 'ordre', e.target.value)} /></td>
               <td><input className="input is-small" value={n.texte} onChange={(e) => modifierLocal(n.id, 'texte', e.target.value)} /></td>
               <td><SelectStatut valeur={n.statut_resultant} onChange={(v) => modifierLocal(n.id, 'statut_resultant', v)} /></td>
-              <td><input type="checkbox" checked={!!n.actif} onChange={(e) => modifierLocal(n.id, 'actif', e.target.checked)} aria-label="Active" /></td>
-              <td><button className="button is-small is-primary" onClick={() => enregistrer(n)}>Enregistrer</button></td>
+              <td><input type="checkbox" checked={!!n.actif} onChange={(e) => modifierLocal(n.id, 'actif', e.target.checked)} aria-label={t('admin.active')} /></td>
+              <td><button className="button is-small is-primary" onClick={() => enregistrer(n)}>{t('admin.enregistrer')}</button></td>
             </tr>
           ))}
         </tbody>
       </table>
       <form onSubmit={ajouter} className="columns is-variable is-2 mt-2">
-        <div className="column"><input className="input is-small" placeholder="Nouvelle note rapide" value={nouvelle.texte} onChange={(e) => setNouvelle({ ...nouvelle, texte: e.target.value })} /></div>
+        <div className="column"><input className="input is-small" placeholder={t('admin.nouvelleNote')} value={nouvelle.texte} onChange={(e) => setNouvelle({ ...nouvelle, texte: e.target.value })} /></div>
         <div className="column is-3"><SelectStatut valeur={nouvelle.statut_resultant} onChange={(v) => setNouvelle({ ...nouvelle, statut_resultant: v })} /></div>
-        <div className="column is-narrow"><button className="button is-small is-link" type="submit">Ajouter</button></div>
+        <div className="column is-narrow"><button className="button is-small is-link" type="submit">{t('admin.ajouter')}</button></div>
       </form>
     </div>
   )
@@ -96,6 +101,7 @@ function NotesRapides() {
 
 // ---------- Services ----------
 function Services() {
+  const { t } = useLangue()
   const [services, setServices] = useState([])
   const [nouveau, setNouveau] = useState({ nom: '', couleur: '#3e8ed0' })
   const [message, setMessage] = useState({})
@@ -108,7 +114,7 @@ function Services() {
   async function enregistrer(s) {
     try {
       await api(`/services/${s.id}`, { methode: 'PATCH', corps: s })
-      setMessage({ texte: 'Service enregistré.' })
+      setMessage({ texte: t('admin.serviceEnregistre') })
     } catch (err) { setMessage({ texte: err.message, erreur: true }) }
   }
 
@@ -117,31 +123,31 @@ function Services() {
     try {
       await api('/services', { methode: 'POST', corps: nouveau })
       setNouveau({ nom: '', couleur: '#3e8ed0' })
-      setMessage({ texte: 'Service ajouté.' })
+      setMessage({ texte: t('admin.serviceAjoute') })
       charger()
     } catch (err) { setMessage({ texte: err.message, erreur: true }) }
   }
 
   return (
     <div className="box">
-      <p className="mb-4 has-text-grey">Les services servent aux filtres et donnent sa couleur à chaque appel.</p>
+      <p className="mb-4 has-text-grey">{t('admin.servicesAide')}</p>
       <Message {...message} />
       <table className="table is-fullwidth">
-        <thead><tr><th>Nom</th><th style={{ width: 120 }}>Couleur</th><th /></tr></thead>
+        <thead><tr><th>{t('admin.nom')}</th><th style={{ width: 120 }}>{t('admin.couleur')}</th><th /></tr></thead>
         <tbody>
           {services.map((s) => (
             <tr key={s.id}>
               <td><input className="input is-small" value={s.nom} onChange={(e) => modifierLocal(s.id, 'nom', e.target.value)} /></td>
-              <td><input type="color" value={s.couleur} onChange={(e) => modifierLocal(s.id, 'couleur', e.target.value)} aria-label="Couleur" /></td>
-              <td><button className="button is-small is-primary" onClick={() => enregistrer(s)}>Enregistrer</button></td>
+              <td><input type="color" value={s.couleur} onChange={(e) => modifierLocal(s.id, 'couleur', e.target.value)} aria-label={t('admin.couleur')} /></td>
+              <td><button className="button is-small is-primary" onClick={() => enregistrer(s)}>{t('admin.enregistrer')}</button></td>
             </tr>
           ))}
         </tbody>
       </table>
       <form onSubmit={ajouter} className="columns is-variable is-2 mt-2">
-        <div className="column"><input className="input is-small" placeholder="Nouveau service" value={nouveau.nom} onChange={(e) => setNouveau({ ...nouveau, nom: e.target.value })} /></div>
-        <div className="column is-narrow"><input type="color" value={nouveau.couleur} onChange={(e) => setNouveau({ ...nouveau, couleur: e.target.value })} aria-label="Couleur" /></div>
-        <div className="column is-narrow"><button className="button is-small is-link" type="submit">Ajouter</button></div>
+        <div className="column"><input className="input is-small" placeholder={t('admin.nouveauService')} value={nouveau.nom} onChange={(e) => setNouveau({ ...nouveau, nom: e.target.value })} /></div>
+        <div className="column is-narrow"><input type="color" value={nouveau.couleur} onChange={(e) => setNouveau({ ...nouveau, couleur: e.target.value })} aria-label={t('admin.couleur')} /></div>
+        <div className="column is-narrow"><button className="button is-small is-link" type="submit">{t('admin.ajouter')}</button></div>
       </form>
     </div>
   )
@@ -149,6 +155,7 @@ function Services() {
 
 // ---------- Comptes ----------
 function Comptes() {
+  const { t } = useLangue()
   const [comptes, setComptes] = useState([])
   const [nouveau, setNouveau] = useState({ nom: '', courriel: '', mot_de_passe: '', role: 'membre' })
   const [message, setMessage] = useState({})
@@ -159,7 +166,7 @@ function Comptes() {
   async function modifier(id, corps) {
     try {
       await api(`/utilisateurs/${id}`, { methode: 'PATCH', corps })
-      setMessage({ texte: 'Compte mis à jour.' })
+      setMessage({ texte: t('admin.compteMaj') })
       charger()
     } catch (err) { setMessage({ texte: err.message, erreur: true }) }
   }
@@ -169,7 +176,7 @@ function Comptes() {
     try {
       await api('/utilisateurs', { methode: 'POST', corps: nouveau })
       setNouveau({ nom: '', courriel: '', mot_de_passe: '', role: 'membre' })
-      setMessage({ texte: 'Compte créé.' })
+      setMessage({ texte: t('admin.compteCree') })
       charger()
     } catch (err) { setMessage({ texte: err.message, erreur: true }) }
   }
@@ -178,7 +185,7 @@ function Comptes() {
     <div className="box">
       <Message {...message} />
       <table className="table is-fullwidth">
-        <thead><tr><th>Nom</th><th>Courriel</th><th>Rôle</th><th>Accès</th></tr></thead>
+        <thead><tr><th>{t('admin.nom')}</th><th>{t('admin.courriel')}</th><th>{t('admin.role')}</th><th>{t('admin.acces')}</th></tr></thead>
         <tbody>
           {comptes.map((c) => (
             <tr key={c.id} className={c.actif ? '' : 'has-text-grey-light'}>
@@ -187,34 +194,34 @@ function Comptes() {
               <td>
                 <div className="select is-small">
                   <select value={c.role} onChange={(e) => modifier(c.id, { role: e.target.value })}>
-                    <option value="membre">Membre</option>
-                    <option value="admin">Administratrice</option>
+                    <option value="membre">{t('admin.membre')}</option>
+                    <option value="admin">{t('admin.administratrice')}</option>
                   </select>
                 </div>
               </td>
               <td>
                 <button className={`button is-small ${c.actif ? 'is-light' : 'is-warning'}`} onClick={() => modifier(c.id, { actif: !c.actif })}>
-                  {c.actif ? 'Désactiver' : 'Réactiver'}
+                  {c.actif ? t('admin.desactiver') : t('admin.reactiver')}
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      <h2 className="subtitle is-6 has-text-weight-semibold mt-5">Ajouter un compte</h2>
+      <h2 className="subtitle is-6 has-text-weight-semibold mt-5">{t('admin.ajouterCompte')}</h2>
       <form onSubmit={ajouter} className="columns is-variable is-2 is-multiline">
-        <div className="column is-3"><input className="input is-small" placeholder="Nom" required value={nouveau.nom} onChange={(e) => setNouveau({ ...nouveau, nom: e.target.value })} /></div>
-        <div className="column is-3"><input className="input is-small" type="email" placeholder="Courriel" required value={nouveau.courriel} onChange={(e) => setNouveau({ ...nouveau, courriel: e.target.value })} /></div>
-        <div className="column is-3"><input className="input is-small" type="password" placeholder="Mot de passe (8 caractères min.)" required value={nouveau.mot_de_passe} onChange={(e) => setNouveau({ ...nouveau, mot_de_passe: e.target.value })} /></div>
+        <div className="column is-3"><input className="input is-small" placeholder={t('admin.nom')} required value={nouveau.nom} onChange={(e) => setNouveau({ ...nouveau, nom: e.target.value })} /></div>
+        <div className="column is-3"><input className="input is-small" type="email" placeholder={t('admin.courriel')} required value={nouveau.courriel} onChange={(e) => setNouveau({ ...nouveau, courriel: e.target.value })} /></div>
+        <div className="column is-3"><input className="input is-small" type="password" placeholder={t('admin.mdpMin')} required value={nouveau.mot_de_passe} onChange={(e) => setNouveau({ ...nouveau, mot_de_passe: e.target.value })} /></div>
         <div className="column is-narrow">
           <div className="select is-small">
             <select value={nouveau.role} onChange={(e) => setNouveau({ ...nouveau, role: e.target.value })}>
-              <option value="membre">Membre</option>
-              <option value="admin">Administratrice</option>
+              <option value="membre">{t('admin.membre')}</option>
+              <option value="admin">{t('admin.administratrice')}</option>
             </select>
           </div>
         </div>
-        <div className="column is-narrow"><button className="button is-small is-link" type="submit">Créer</button></div>
+        <div className="column is-narrow"><button className="button is-small is-link" type="submit">{t('admin.creer')}</button></div>
       </form>
     </div>
   )

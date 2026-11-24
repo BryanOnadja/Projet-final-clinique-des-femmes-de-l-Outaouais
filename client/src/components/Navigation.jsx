@@ -1,25 +1,27 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
+import { BoutonLangue, useLangue } from '../i18n'
 
 export default function Navigation() {
   const { utilisateur, deconnexion, enDirect } = useAuth()
+  const { t } = useLangue()
   const [ouvert, setOuvert] = useState(false)
   const lien = ({ isActive }) => `navbar-item${isActive ? ' is-active' : ''}`
 
   return (
-    <nav className="navbar barre" aria-label="Navigation principale">
+    <nav className="navbar barre" aria-label="Navigation">
       <div className="navbar-brand">
         <NavLink to="/" className="navbar-item marque">
           <span className="marque-icone" aria-hidden="true">☎</span>
           <span>
-            <strong>Suivi des appels</strong>
-            <small className="is-block">Clinique des femmes de l'Outaouais</small>
+            <strong>{t('app.titre')}</strong>
+            <small className="is-block">{t('app.clinique')}</small>
           </span>
         </NavLink>
         <button
           className={`navbar-burger${ouvert ? ' is-active' : ''}`}
-          aria-label="Menu"
+          aria-label={t('nav.menu')}
           aria-expanded={ouvert}
           onClick={() => setOuvert(!ouvert)}
         >
@@ -27,22 +29,25 @@ export default function Navigation() {
         </button>
       </div>
 
-      <div className={`navbar-menu${ouvert ? ' is-active' : ''}`} onClick={() => setOuvert(false)}>
-        <div className="navbar-start">
-          <NavLink to="/" end className={lien}>Appels</NavLink>
-          <NavLink to="/nouvel-appel" className={lien}>+ Nouvel appel</NavLink>
-          <NavLink to="/archives" className={lien}>Archives et recherche</NavLink>
-          {utilisateur.role === 'admin' && <NavLink to="/admin" className={lien}>Administration</NavLink>}
+      <div className={`navbar-menu${ouvert ? ' is-active' : ''}`}>
+        <div className="navbar-start" onClick={() => setOuvert(false)}>
+          <NavLink to="/" end className={lien}>{t('nav.appels')}</NavLink>
+          <NavLink to="/nouvel-appel" className={lien}>{t('nav.nouvel')}</NavLink>
+          <NavLink to="/archives" className={lien}>{t('nav.archives')}</NavLink>
+          {utilisateur.role === 'admin' && <NavLink to="/admin" className={lien}>{t('nav.admin')}</NavLink>}
         </div>
         <div className="navbar-end">
           <div className="navbar-item">
-            <span className={`direct ${enDirect ? 'est-actif' : ''}`} title="Mises à jour en temps réel">
-              <span className="point" /> {enDirect ? 'En direct' : 'Hors ligne'}
+            <span className={`direct ${enDirect ? 'est-actif' : ''}`} title={t('nav.directTitre')}>
+              <span className="point" /> {enDirect ? t('nav.direct') : t('nav.horsLigne')}
             </span>
           </div>
           <div className="navbar-item">
+            <BoutonLangue />
+          </div>
+          <div className="navbar-item">
             <span className="mr-3">{utilisateur.nom}</span>
-            <button className="button is-small is-light" onClick={deconnexion}>Déconnexion</button>
+            <button className="button is-small is-light" onClick={deconnexion}>{t('nav.deconnexion')}</button>
           </div>
         </div>
       </div>

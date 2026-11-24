@@ -9,6 +9,7 @@ Ajoutez une entrée à chaque nouvelle utilisation.
 | 2026-11-15 | Claude | Calendrier refait jusqu'à la présentation du 9 décembre | « on doit peresenter le prototype final le 9 decembre donc laisse toute les dates que tu vois la » |
 | 2026-11-20 | Claude | User stories du projet | « Les User Stories • Une User Story décrit un besoin du point de vue de l'utilisateur. En tant que [utilisateur] Je veux [objectif] Afin de [bénéfice]. je veux que tu me donnes la user stories du projet » |
 | 2026-11-20 | Claude | Première version du code (front-end React, back-end Express, base MySQL, Socket.io) | « puis qur tu as deja tout le plan et tout je veux du visel... donne moi alors le front end back end je vais faire un depot sur gitub et voir le fnctionnement » |
+| 2026-11-23 | Claude | Bouton FR/EN et traduction anglaise de l'interface | « es ce que l'application peut etre mise en anglais? » puis « oui un bouton » |
 
 ## Ce que l'équipe a vérifié et compris
 
@@ -18,4 +19,5 @@ Ajoutez une entrée à chaque nouvelle utilisation.
 - [ ] `server/src/auth.js` – bcrypt, JWT, middlewares
 - [ ] `server/src/temps-reel.js` – Socket.io
 - [ ] `client/src/AuthContext.jsx` – connexion, socket, inactivité
+- [ ] `client/src/i18n.jsx` – traductions et bouton FR/EN
 - [ ] `client/src/pages/*` – écrans React
