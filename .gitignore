@@ -1,7 +1,6 @@
 # Dépendances
 node_modules/
 
-# Secrets : ne JAMAIS envoyer sur GitHub
 .env
 
 # Fichiers générés
