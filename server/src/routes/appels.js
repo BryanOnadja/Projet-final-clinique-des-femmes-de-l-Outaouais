@@ -45,11 +45,12 @@ async function ajouterAction(appelId, utilisateurId, texte, noteRapideId = null)
   );
 }
 
-// "2026-11-20T10:30" (champ datetime-local) -> "2026-11-20 10:30:00"
-function versDateSql(valeur) {
+// Date envoyée par le navigateur (format ISO, avec son fuseau horaire) -> objet Date.
+// Ainsi l'heure reste juste même si le serveur est dans un autre fuseau (ex. en ligne).
+function versDate(valeur) {
   if (!valeur) return null;
-  const texte = String(valeur).replace('T', ' ');
-  return texte.length === 16 ? `${texte}:00` : texte;
+  const date = new Date(valeur);
+  return Number.isNaN(date.getTime()) ? null : date;
 }
 
 const nettoyer = (v) => (typeof v === 'string' && v.trim() !== '' ? v.trim() : null);
@@ -139,7 +140,7 @@ router.post('/', async (req, res, next) => {
         b.confidentiel ? nettoyer(b.consigne_confidentialite) : null,
         b.service_id ? Number(b.service_id) : null,
         nettoyer(b.transcription),
-        versDateSql(b.recu_le) || new Date(),
+        versDate(b.recu_le) || new Date(),
         req.utilisateur.id,
       ]
     );

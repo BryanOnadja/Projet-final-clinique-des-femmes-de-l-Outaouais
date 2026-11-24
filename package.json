@@ -7,10 +7,13 @@
     "setup": "npm install && npm install --prefix server && npm install --prefix client",
     "db:init": "npm run seed --prefix server",
     "dev": "concurrently -n serveur,client -c blue,magenta \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
-    "build": "npm run build --prefix client",
+    "build": "npm install --prefix server && npm install --include=dev --prefix client && npm run build --prefix client",
     "start": "npm start --prefix server"
   },
   "devDependencies": {
     "concurrently": "^10.0.7"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

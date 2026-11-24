@@ -1,12 +1,14 @@
 // Crée la base de données, les tables et un jeu de DONNÉES FICTIVES.
 // Usage : npm run db:init (depuis la racine) ou npm run seed (depuis server/)
 // ATTENTION : efface toutes les données existantes.
+// En ligne, le serveur l'appelle tout seul au premier démarrage, quand la base est vide.
 
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env'), quiet: true });
 const fs = require('fs');
 const path = require('path');
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
+const { configurationMySQL } = require('../src/config-mysql');
 
 const NOM_BASE = process.env.DB_NAME || 'clinique_appels';
 
@@ -100,19 +102,16 @@ function ajouterMinutes(date, minutes) {
 
 // ---------- Exécution ----------
 
-async function main() {
-  const connexion = await mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    port: Number(process.env.DB_PORT || 3306),
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    multipleStatements: true,
-    timezone: 'local',
-  });
+async function creerBaseDemo() {
+  const config = configurationMySQL({ avecBase: false });
+  const connexion = await mysql.createConnection({ ...config, multipleStatements: true, timezone: 'local' });
 
-  console.log(`Création de la base « ${NOM_BASE} »...`);
-  await connexion.query(`CREATE DATABASE IF NOT EXISTS \`${NOM_BASE}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
-  await connexion.query(`USE \`${NOM_BASE}\``);
+  // En local, on crée la base si besoin. En ligne, l'hébergeur l'a déjà créée.
+  if (!config.uri) {
+    console.log(`Création de la base « ${NOM_BASE} »...`);
+    await connexion.query(`CREATE DATABASE IF NOT EXISTS \`${NOM_BASE}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+    await connexion.query(`USE \`${NOM_BASE}\``);
+  }
   await connexion.query(fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8'));
 
   // Utilisateurs
@@ -244,8 +243,13 @@ async function main() {
   await connexion.end();
 }
 
-main().catch((err) => {
-  console.error('Erreur pendant la création de la base :', err.message);
-  console.error('Vérifiez que MySQL est démarré (XAMPP) et les valeurs de server/.env');
-  process.exit(1);
-});
+module.exports = { creerBaseDemo };
+
+// Lancé directement avec « npm run db:init »
+if (require.main === module) {
+  creerBaseDemo().catch((err) => {
+    console.error('Erreur pendant la création de la base :', err.message);
+    console.error('Vérifiez que MySQL est démarré (XAMPP) et les valeurs de server/.env');
+    process.exit(1);
+  });
+}

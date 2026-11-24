@@ -35,7 +35,9 @@ export default function NouvelAppel() {
     setErreur('')
     setEnvoi(true)
     try {
-      const appel = await api('/appels', { methode: 'POST', corps: f })
+      // L'heure saisie est celle de l'ordinateur : on l'envoie avec son fuseau horaire
+      const corps = { ...f, recu_le: new Date(f.recu_le).toISOString() }
+      const appel = await api('/appels', { methode: 'POST', corps })
       navigate(`/appels/${appel.id}`)
     } catch (err) {
       setErreur(err.message)

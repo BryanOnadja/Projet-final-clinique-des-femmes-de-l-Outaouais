@@ -11,6 +11,7 @@ const { router: routesAuth, exigerConnexion } = require('./auth');
 const routesAppels = require('./routes/appels');
 const { notes, services, utilisateurs } = require('./routes/configuration');
 const { demarrerTempsReel } = require('./temps-reel');
+const { creerBaseDemo } = require('../db/seed');
 
 const PORT = Number(process.env.PORT || 4000);
 const ORIGINE_CLIENT = process.env.CLIENT_URL || 'http://localhost:5173';
@@ -54,6 +55,20 @@ app.use((err, req, res, next) => {
 const serveur = http.createServer(app);
 demarrerTempsReel(serveur, ORIGINE_CLIENT);
 
-serveur.listen(PORT, () => {
-  console.log(`✅ Serveur démarré sur http://localhost:${PORT}`);
-});
+// Base vide (premier démarrage en ligne) : on crée les tables et les données fictives
+async function preparerBase() {
+  const [tables] = await db.query("SHOW TABLES LIKE 'utilisateurs'");
+  if (tables.length === 0) {
+    console.log('Base vide : création des tables et des données fictives...');
+    await creerBaseDemo();
+  }
+}
+
+preparerBase()
+  .then(() => {
+    serveur.listen(PORT, () => console.log(`✅ Serveur démarré sur le port ${PORT}`));
+  })
+  .catch((err) => {
+    console.error('Impossible de préparer la base de données :', err.message);
+    process.exit(1);
+  });
