@@ -4,10 +4,13 @@ import appelsService from '../services/appelsService'
 
 export const FILTRES_VIDES = { statut: '', service: '', langue: '', q: '' }
 
-// Charge la liste avec les filtres actuels
-export const fetchAppels = createAsyncThunk('appels/fetchAppels', async (_, { getState }) =>
-  appelsService.lister(getState().appels.filtres),
-)
+// Charge la liste avec les filtres actuels. Le statut est filtré à l'écran (onglets),
+// pour que les compteurs des onglets restent justes.
+export const fetchAppels = createAsyncThunk('appels/fetchAppels', async (_, { getState }) => {
+  // eslint-disable-next-line no-unused-vars
+  const { statut, ...filtresServeur } = getState().appels.filtres
+  return appelsService.lister(filtresServeur)
+})
 
 const appelsSlice = createSlice({
   name: 'appels',

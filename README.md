@@ -6,6 +6,8 @@ L'application regroupe en un seul endroit les messages des 4 boîtes vocales et 
 
 > ⚠️ **Toutes les données sont fictives.** N'entrez jamais de vraies informations de clientes dans ce prototype.
 
+![Connexion](docs/captures/connexion.jpg)
+
 ![Tableau des appels](docs/captures/tableau.jpg)
 
 ## Fonctionnalités
@@ -21,6 +23,7 @@ L'application regroupe en un seul endroit les messages des 4 boîtes vocales et 
 - Filtres par statut, service (avec couleurs) et langue
 - **Recherche par numéro de téléphone** dans tous les appels, même anciens
 - Administration : modifier les notes rapides, les services et leurs couleurs, les comptes de l'équipe
+- **Interface professionnelle** : barre latérale, logo, couleurs aubergine et framboise, police Atkinson Hyperlegible Next (conçue pour la lisibilité), icônes Lucide, adaptée aux téléphones ; le temps d'attente de chaque appel change de couleur avec l'ancienneté
 - **Interface bilingue** : bouton **FR / EN** dans la barre du haut (et sur la page de connexion), mémorisé sur chaque ordinateur. Les notes rapides et les noms des services restent dans la langue où l'administratrice les a écrits.
 
 ![Interface en anglais](docs/captures/tableau-en.jpg)
@@ -33,7 +36,7 @@ L'application regroupe en un seul endroit les messages des 4 boîtes vocales et 
 
 | Partie | Outils |
 | --- | --- |
-| Front-end | React 19 (Vite), Redux Toolkit, Axios, React Router, Bulma CSS, socket.io-client |
+| Front-end | React 19 (Vite), Redux Toolkit, Axios, React Router, Bulma CSS, Lucide (icônes), socket.io-client |
 | Back-end | Node.js, Express (modèle MVC, modules ES), Socket.io, jsonwebtoken, bcryptjs |
 | Base de données | MySQL (mysql2) – fonctionne avec XAMPP |
 | Tests | Vitest, Testing Library, Playwright, Postman |
@@ -91,7 +94,7 @@ clinique-appels/
 ├── frontend/                      Front-end : React (Vite) + Redux Toolkit + Axios + Bulma
 │   ├── src/
 │   │   ├── pages/                 Connexion, Tableau, NouvelAppel, Fiche, Archives, Admin
-│   │   ├── components/            Navigation, étiquettes (statut, service, langue)
+│   │   ├── components/            Navigation (barre latérale), Logo, étiquettes (statut, service, langue)
 │   │   ├── services/              api.js (instance Axios), authService, appelsService,
 │   │   │                          configurationService, socket.js (Socket.io)
 │   │   ├── store/                 store.js + slices Redux : authSlice, appelsSlice, configurationSlice

@@ -1,58 +1,80 @@
+// Barre latérale : logo, menu, état du temps réel, langue et personne connectée.
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { deconnexion } from '../store/authSlice'
+import { NavLink } from 'react-router-dom'
+import { Archive, Inbox, LogOut, Menu, PhoneIncoming, Settings, X } from 'lucide-react'
 import { BoutonLangue, useLangue } from '../i18n'
+import { deconnexion } from '../store/authSlice'
+import Logo, { Avatar } from './Logo'
 
 export default function Navigation() {
   const dispatch = useDispatch()
   const { utilisateur, enDirect } = useSelector((state) => state.auth)
   const { t } = useLangue()
   const [ouvert, setOuvert] = useState(false)
-  const lien = ({ isActive }) => `navbar-item${isActive ? ' is-active' : ''}`
+
+  const lien = ({ isActive }) => `lien-nav${isActive ? ' est-actif' : ''}`
+  const fermer = () => setOuvert(false)
 
   return (
-    <nav className="navbar barre" aria-label="Navigation">
-      <div className="navbar-brand">
-        <NavLink to="/" className="navbar-item marque">
-          <span className="marque-icone" aria-hidden="true">☎</span>
+    <>
+      {/* Barre du haut, sur téléphone seulement */}
+      <header className="barre-mobile">
+        <NavLink to="/" className="marque" onClick={fermer}>
+          <Logo taille={28} />
+          <span className="marque-nom">{t('app.titre')}</span>
+        </NavLink>
+        <button className="bouton-icone" aria-label={t('nav.menu')} aria-expanded={ouvert} onClick={() => setOuvert(!ouvert)}>
+          {ouvert ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
+        </button>
+      </header>
+
+      <aside className={`barre-laterale${ouvert ? ' est-ouverte' : ''}`} aria-label="Navigation">
+        <NavLink to="/" className="marque marque-laterale" onClick={fermer}>
+          <Logo taille={34} />
           <span>
-            <strong>{t('app.titre')}</strong>
-            <small className="is-block">{t('app.clinique')}</small>
+            <span className="marque-nom">{t('app.titre')}</span>
+            <span className="marque-clinique">{t('app.clinique')}</span>
           </span>
         </NavLink>
-        <button
-          className={`navbar-burger${ouvert ? ' is-active' : ''}`}
-          aria-label={t('nav.menu')}
-          aria-expanded={ouvert}
-          onClick={() => setOuvert(!ouvert)}
-        >
-          <span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" />
-        </button>
-      </div>
 
-      <div className={`navbar-menu${ouvert ? ' is-active' : ''}`}>
-        <div className="navbar-start" onClick={() => setOuvert(false)}>
-          <NavLink to="/" end className={lien}>{t('nav.appels')}</NavLink>
-          <NavLink to="/nouvel-appel" className={lien}>{t('nav.nouvel')}</NavLink>
-          <NavLink to="/archives" className={lien}>{t('nav.archives')}</NavLink>
-          {utilisateur.role === 'admin' && <NavLink to="/admin" className={lien}>{t('nav.admin')}</NavLink>}
-        </div>
-        <div className="navbar-end">
-          <div className="navbar-item">
-            <span className={`direct ${enDirect ? 'est-actif' : ''}`} title={t('nav.directTitre')}>
-              <span className="point" /> {enDirect ? t('nav.direct') : t('nav.horsLigne')}
+        <nav className="menu-principal" onClick={fermer}>
+          <NavLink to="/" end className={lien}>
+            <Inbox size={19} aria-hidden="true" /> {t('nav.appels')}
+          </NavLink>
+          <NavLink to="/nouvel-appel" className={lien}>
+            <PhoneIncoming size={19} aria-hidden="true" /> {t('nav.nouvel')}
+          </NavLink>
+          <NavLink to="/archives" className={lien}>
+            <Archive size={19} aria-hidden="true" /> {t('nav.archives')}
+          </NavLink>
+          {utilisateur.role === 'admin' && (
+            <NavLink to="/admin" className={lien}>
+              <Settings size={19} aria-hidden="true" /> {t('nav.admin')}
+            </NavLink>
+          )}
+        </nav>
+
+        <div className="pied-lateral">
+          <div className="ligne-pied">
+            <span className={`direct${enDirect ? ' est-actif' : ''}`} title={t('nav.directTitre')}>
+              <span className="point" aria-hidden="true" /> {enDirect ? t('nav.direct') : t('nav.horsLigne')}
+            </span>
+            <BoutonLangue sombre />
+          </div>
+          <div className="carte-utilisatrice">
+            <Avatar nom={utilisateur.nom} />
+            <span className="identite">
+              <span className="identite-nom">{utilisateur.nom}</span>
+              <span className="identite-role">{t(`role.${utilisateur.role}`)}</span>
             </span>
           </div>
-          <div className="navbar-item">
-            <BoutonLangue />
-          </div>
-          <div className="navbar-item">
-            <span className="mr-3">{utilisateur.nom}</span>
-            <button className="button is-small is-light" onClick={() => dispatch(deconnexion())}>{t('nav.deconnexion')}</button>
-          </div>
+          <button className="bouton-deconnexion" onClick={() => dispatch(deconnexion())}>
+            <LogOut size={17} aria-hidden="true" /> {t('nav.deconnexion')}
+          </button>
         </div>
-      </div>
-    </nav>
+      </aside>
+      {ouvert && <div className="voile" onClick={fermer} aria-hidden="true" />}
+    </>
   )
 }

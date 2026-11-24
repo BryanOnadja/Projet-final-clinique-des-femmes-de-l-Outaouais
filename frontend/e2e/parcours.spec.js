@@ -29,7 +29,7 @@ test('un appel créé par la réception apparaît en direct chez l’infirmière
   await seConnecter(infirmiere, 'infirmiere@clinique.test')
 
   // La réceptionniste crée une fiche confidentielle
-  await reception.getByRole('link', { name: '+ Nouvel appel' }).first().click()
+  await reception.getByRole('link', { name: 'Nouvel appel' }).first().click()
   await reception.getByLabel('Nom').fill(nom)
   await reception.getByLabel('Téléphone *').fill('819-555-0190')
   await reception.getByRole('button', { name: 'Anglais' }).click()

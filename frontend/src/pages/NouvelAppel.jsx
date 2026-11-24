@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { CircleAlert, Lock, Voicemail } from 'lucide-react'
 import appelsService from '../services/appelsService'
 import { fetchConfiguration } from '../store/configurationSlice'
 import { LANGUES, SOURCES, maintenantLocal } from '../constantes'
@@ -52,12 +53,14 @@ export default function NouvelAppel() {
 
   return (
     <form onSubmit={soumettre} className="formulaire-appel">
-      <h1 className="title is-4">{t('nouvel.titre')}</h1>
+      <header className="entete-page">
+        <h1 className="titre-page">{t('nouvel.titre')}</h1>
+      </header>
 
       <div className="columns">
         <div className="column is-7">
-          <div className="box">
-            <h2 className="subtitle is-6 has-text-weight-semibold">{t('nouvel.origine')}</h2>
+          <div className="panneau panneau-padding">
+            <h2 className="titre-section">{t('nouvel.origine')}</h2>
             <div className="columns">
               <div className="column">
                 <label className="label" htmlFor="source">{t('col.source')}</label>
@@ -73,7 +76,7 @@ export default function NouvelAppel() {
               </div>
             </div>
 
-            <h2 className="subtitle is-6 has-text-weight-semibold mt-5">{t('nouvel.qui')}</h2>
+            <h2 className="titre-section mt-5">{t('nouvel.qui')}</h2>
             <div className="columns is-multiline">
               <div className="column is-6">
                 <label className="label" htmlFor="nom">{t('nouvel.nom')}</label>
@@ -90,10 +93,10 @@ export default function NouvelAppel() {
               </div>
               <div className="column is-6">
                 <span className="label">{t('nouvel.langue')}</span>
-                <div className="buttons has-addons">
+                <div className="segmente segmente-large" role="group" aria-label={t('nouvel.langue')}>
                   {LANGUES.map((v) => (
                     <button type="button" key={v}
-                      className={`button ${f.langue === v ? 'is-primary' : ''}`}
+                      className={`segment${f.langue === v ? ' est-actif' : ''}`}
                       aria-pressed={f.langue === v}
                       onClick={() => setF({ ...f, langue: v })}>{t(`langue.${v}`)}</button>
                   ))}
@@ -101,7 +104,7 @@ export default function NouvelAppel() {
               </div>
             </div>
 
-            <h2 className="subtitle is-6 has-text-weight-semibold mt-5">{t('nouvel.pourquoi')}</h2>
+            <h2 className="titre-section mt-5">{t('nouvel.pourquoi')}</h2>
             <div className="field">
               <label className="label" htmlFor="service">{t('col.service')}</label>
               <div className="select is-fullwidth">
@@ -119,10 +122,11 @@ export default function NouvelAppel() {
         </div>
 
         <div className="column is-5">
-          <div className={`box ${f.confidentiel ? 'boite-confidentielle' : ''}`}>
-            <label className="checkbox has-text-weight-semibold">
-              <input type="checkbox" checked={f.confidentiel} onChange={changer('confidentiel')} className="mr-2" />
-              {t('nouvel.confidentiel')}
+          <div className={`panneau panneau-padding boite-confidentialite${f.confidentiel ? ' est-active' : ''}`}>
+            <label className="case-confidentialite">
+              <input type="checkbox" checked={f.confidentiel} onChange={changer('confidentiel')} />
+              <Lock size={17} aria-hidden="true" />
+              <span>{t('nouvel.confidentiel')}</span>
             </label>
             {f.confidentiel && (
               <div className="field mt-3">
@@ -134,16 +138,16 @@ export default function NouvelAppel() {
           </div>
 
           {estMessageVocal && (
-            <div className="box">
-              <label className="label" htmlFor="transcription">{t('nouvel.transcription')}</label>
+            <div className="panneau panneau-padding">
+              <label className="titre-section" htmlFor="transcription"><Voicemail size={18} aria-hidden="true" /> {t('nouvel.transcription')}</label>
               <p className="help mb-2">{t('nouvel.transcriptionAide')}</p>
               <textarea id="transcription" className="textarea" rows="8" value={f.transcription} onChange={changer('transcription')} />
             </div>
           )}
 
-          {erreur && <p className="notification is-danger is-light">{tErreur(erreur)}</p>}
+          {erreur && <p className="message-erreur" role="alert"><CircleAlert size={18} aria-hidden="true" /> {tErreur(erreur)}</p>}
           <div className="buttons is-right">
-            <button type="button" className="button is-light" onClick={() => navigate(-1)}>{t('nouvel.annuler')}</button>
+            <button type="button" className="button is-white" onClick={() => navigate(-1)}>{t('nouvel.annuler')}</button>
             <button type="submit" className={`button is-primary${envoi ? ' is-loading' : ''}`}>{t('nouvel.creer')}</button>
           </div>
         </div>

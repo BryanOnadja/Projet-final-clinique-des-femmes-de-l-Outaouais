@@ -3,19 +3,27 @@ import { useEffect, useState } from 'react'
 import configurationService from '../services/configurationService'
 import { STATUTS } from '../constantes'
 import { useLangue } from '../i18n'
+import { CircleAlert, CircleCheck, ListChecks, Tags, Users } from 'lucide-react'
 
 export default function Admin() {
   const [onglet, setOnglet] = useState('notes')
   const { t } = useLangue()
   return (
     <>
-      <h1 className="title is-4">{t('admin.titre')}</h1>
-      <div className="tabs is-boxed">
-        <ul>
-          <li className={onglet === 'notes' ? 'is-active' : ''}><a onClick={() => setOnglet('notes')}>{t('admin.notes')}</a></li>
-          <li className={onglet === 'services' ? 'is-active' : ''}><a onClick={() => setOnglet('services')}>{t('admin.services')}</a></li>
-          <li className={onglet === 'comptes' ? 'is-active' : ''}><a onClick={() => setOnglet('comptes')}>{t('admin.comptes')}</a></li>
-        </ul>
+      <header className="entete-page">
+        <h1 className="titre-page">{t('admin.titre')}</h1>
+      </header>
+      <div className="onglets-statut" role="tablist">
+        {[
+          ['notes', ListChecks, t('admin.notes')],
+          ['services', Tags, t('admin.services')],
+          ['comptes', Users, t('admin.comptes')],
+        ].map(([cle, Icone, libelle]) => (
+          <button key={cle} role="tab" aria-selected={onglet === cle}
+            className={`onglet${onglet === cle ? ' est-actif' : ''}`} onClick={() => setOnglet(cle)}>
+            <Icone size={17} aria-hidden="true" /> {libelle}
+          </button>
+        ))}
       </div>
       {onglet === 'notes' && <NotesRapides />}
       {onglet === 'services' && <Services />}
@@ -27,7 +35,11 @@ export default function Admin() {
 function Message({ texte, erreur }) {
   const { tErreur } = useLangue()
   if (!texte) return null
-  return <p className={`notification is-light py-2 ${erreur ? 'is-danger' : 'is-success'}`}>{erreur ? tErreur(texte) : texte}</p>
+  return (
+    <p className={erreur ? 'message-erreur' : 'message-succes'} role={erreur ? 'alert' : 'status'}>
+      {erreur ? <CircleAlert size={18} aria-hidden="true" /> : <CircleCheck size={18} aria-hidden="true" />} {erreur ? tErreur(texte) : texte}
+    </p>
+  )
 }
 
 function SelectStatut({ valeur, onChange }) {
@@ -73,14 +85,14 @@ function NotesRapides() {
   }
 
   return (
-    <div className="box">
-      <p className="mb-4 has-text-grey">{t('admin.notesAide')}</p>
+    <div className="panneau panneau-padding">
+      <p className="aide-section">{t('admin.notesAide')}</p>
       <Message {...message} />
       <table className="table is-fullwidth">
         <thead><tr><th style={{ width: 70 }}>{t('admin.ordre')}</th><th>{t('admin.texte')}</th><th style={{ width: 240 }}>{t('admin.statutDonne')}</th><th>{t('admin.active')}</th><th /></tr></thead>
         <tbody>
           {notes.map((n) => (
-            <tr key={n.id} className={n.actif ? '' : 'has-text-grey-light'}>
+            <tr key={n.id} className={n.actif ? '' : 'ligne-inactive'}>
               <td><input className="input is-small" type="number" value={n.ordre} onChange={(e) => modifierLocal(n.id, 'ordre', e.target.value)} /></td>
               <td><input className="input is-small" value={n.texte} onChange={(e) => modifierLocal(n.id, 'texte', e.target.value)} /></td>
               <td><SelectStatut valeur={n.statut_resultant} onChange={(v) => modifierLocal(n.id, 'statut_resultant', v)} /></td>
@@ -93,7 +105,7 @@ function NotesRapides() {
       <form onSubmit={ajouter} className="columns is-variable is-2 mt-2">
         <div className="column"><input className="input is-small" placeholder={t('admin.nouvelleNote')} value={nouvelle.texte} onChange={(e) => setNouvelle({ ...nouvelle, texte: e.target.value })} /></div>
         <div className="column is-3"><SelectStatut valeur={nouvelle.statut_resultant} onChange={(v) => setNouvelle({ ...nouvelle, statut_resultant: v })} /></div>
-        <div className="column is-narrow"><button className="button is-small is-link" type="submit">{t('admin.ajouter')}</button></div>
+        <div className="column is-narrow"><button className="button is-small is-primary" type="submit">{t('admin.ajouter')}</button></div>
       </form>
     </div>
   )
@@ -129,8 +141,8 @@ function Services() {
   }
 
   return (
-    <div className="box">
-      <p className="mb-4 has-text-grey">{t('admin.servicesAide')}</p>
+    <div className="panneau panneau-padding">
+      <p className="aide-section">{t('admin.servicesAide')}</p>
       <Message {...message} />
       <table className="table is-fullwidth">
         <thead><tr><th>{t('admin.nom')}</th><th style={{ width: 120 }}>{t('admin.couleur')}</th><th /></tr></thead>
@@ -147,7 +159,7 @@ function Services() {
       <form onSubmit={ajouter} className="columns is-variable is-2 mt-2">
         <div className="column"><input className="input is-small" placeholder={t('admin.nouveauService')} value={nouveau.nom} onChange={(e) => setNouveau({ ...nouveau, nom: e.target.value })} /></div>
         <div className="column is-narrow"><input type="color" value={nouveau.couleur} onChange={(e) => setNouveau({ ...nouveau, couleur: e.target.value })} aria-label={t('admin.couleur')} /></div>
-        <div className="column is-narrow"><button className="button is-small is-link" type="submit">{t('admin.ajouter')}</button></div>
+        <div className="column is-narrow"><button className="button is-small is-primary" type="submit">{t('admin.ajouter')}</button></div>
       </form>
     </div>
   )
@@ -182,13 +194,13 @@ function Comptes() {
   }
 
   return (
-    <div className="box">
+    <div className="panneau panneau-padding">
       <Message {...message} />
       <table className="table is-fullwidth">
         <thead><tr><th>{t('admin.nom')}</th><th>{t('admin.courriel')}</th><th>{t('admin.role')}</th><th>{t('admin.acces')}</th></tr></thead>
         <tbody>
           {comptes.map((c) => (
-            <tr key={c.id} className={c.actif ? '' : 'has-text-grey-light'}>
+            <tr key={c.id} className={c.actif ? '' : 'ligne-inactive'}>
               <td>{c.nom}</td>
               <td>{c.courriel}</td>
               <td>
@@ -200,7 +212,7 @@ function Comptes() {
                 </div>
               </td>
               <td>
-                <button className={`button is-small ${c.actif ? 'is-light' : 'is-warning'}`} onClick={() => modifier(c.id, { actif: !c.actif })}>
+                <button className={`button is-small ${c.actif ? 'is-white' : 'is-warning is-light'}`} onClick={() => modifier(c.id, { actif: !c.actif })}>
                   {c.actif ? t('admin.desactiver') : t('admin.reactiver')}
                 </button>
               </td>
@@ -221,7 +233,7 @@ function Comptes() {
             </select>
           </div>
         </div>
-        <div className="column is-narrow"><button className="button is-small is-link" type="submit">{t('admin.creer')}</button></div>
+        <div className="column is-narrow"><button className="button is-small is-primary" type="submit">{t('admin.creer')}</button></div>
       </form>
     </div>
   )

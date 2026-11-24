@@ -1,6 +1,7 @@
 // Archives + recherche par numéro de téléphone (tous les appels liés à un numéro).
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Search, SearchX } from 'lucide-react'
 import appelsService from '../services/appelsService'
 import { useLangue } from '../i18n'
 import { Cadenas, EtiquetteLangue, EtiquetteService, EtiquetteStatut } from '../components/Etiquettes'
@@ -28,12 +29,15 @@ export default function Archives() {
 
   return (
     <>
-      <h1 className="title is-4">{t('archives.titre')}</h1>
+      <header className="entete-page">
+        <h1 className="titre-page">{t('archives.titre')}</h1>
+      </header>
 
-      <form className="box" onSubmit={soumettre}>
+      <form className="panneau panneau-padding recherche-archives" onSubmit={soumettre}>
         <label className="label" htmlFor="recherche">{t('archives.label')}</label>
         <div className="field has-addons">
-          <div className="control is-expanded">
+          <div className="control is-expanded has-icons-left">
+            <span className="icon is-left"><Search size={19} aria-hidden="true" /></span>
             <input id="recherche" className="input is-medium" type="search" placeholder={t('archives.exemple')}
               value={recherche} onChange={(e) => setRecherche(e.target.value)} />
           </div>
@@ -44,41 +48,48 @@ export default function Archives() {
         <p className="help">{t('archives.aide')}</p>
       </form>
 
-      <p className="mb-3 has-text-grey">
+      <p className="resume-resultats">
         {rechercheFaite
           ? t('archives.trouves', { n: appels.length, q: rechercheFaite })
           : t('archives.recents', { n: appels.length })}
       </p>
 
-      <div className="table-container box p-0">
+      <div className="panneau table-container">
         <table className="table is-fullwidth is-hoverable tableau-appels">
           <thead>
             <tr>
-              <th>{t('col.recuLe')}</th><th>{t('col.appelante')}</th><th>{t('col.telephone')}</th><th>{t('col.langue')}</th><th>{t('col.source')}</th>
+              <th>{t('col.recuLe')}</th><th>{t('col.appelante')}</th><th>{t('col.langue')}</th>
               <th>{t('col.service')}</th><th>{t('col.statut')}</th><th>{t('col.derniereAction')}</th>
             </tr>
           </thead>
           <tbody>
             {appels.map((a) => (
               <tr key={a.id} onClick={() => navigate(`/appels/${a.id}`)}>
-                <td className="is-nowrap">{dateHeure(a.recu_le)}</td>
-                <td className="has-text-weight-semibold">{a.nom_appelant || t('tableau.nomInconnu')} {a.confidentiel ? <Cadenas /> : null}</td>
-                <td className="is-nowrap">{a.telephone}</td>
-                <td><EtiquetteLangue langue={a.langue} /></td>
-                <td className="is-nowrap">{t(`source.${a.source}`)}</td>
-                <td><EtiquetteService nom={a.service_nom} couleur={a.service_couleur} /></td>
-                <td>
-                  <EtiquetteStatut statut={a.statut} />{' '}
-                  {a.archive ? <span className="tag is-dark is-light">{t('fiche.archive')}</span> : null}
+                <td className="is-nowrap">
+                  {dateHeure(a.recu_le)}
+                  <span className="source">{t(`source.${a.source}`)}</span>
                 </td>
-                <td className="motif has-text-grey">{tAction(a.derniere_action)}</td>
+                <td className="is-nowrap">
+                  <span className="nom-appelante">{a.nom_appelant || t('tableau.nomInconnu')}</span> {a.confidentiel ? <Cadenas /> : null}
+                  <span className="telephone">{a.telephone}</span>
+                </td>
+                <td><EtiquetteLangue langue={a.langue} /></td>
+                <td><EtiquetteService nom={a.service_nom} couleur={a.service_couleur} /></td>
+                <td className="is-nowrap">
+                  <EtiquetteStatut statut={a.statut} />{' '}
+                  {a.archive ? <span className="pilule pilule-neutre">{t('fiche.archive')}</span> : null}
+                </td>
+                <td className="motif texte-discret">{tAction(a.derniere_action)}</td>
               </tr>
             ))}
-            {appels.length === 0 && (
-              <tr><td colSpan="8" className="has-text-centered has-text-grey py-6">{t('archives.vide')}</td></tr>
-            )}
           </tbody>
         </table>
+        {appels.length === 0 && (
+          <div className="etat-vide">
+            <SearchX size={40} strokeWidth={1.6} aria-hidden="true" />
+            <p className="etat-vide-titre">{t('archives.vide')}</p>
+          </div>
+        )}
       </div>
     </>
   )

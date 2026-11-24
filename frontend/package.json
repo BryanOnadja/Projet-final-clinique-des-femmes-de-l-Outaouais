@@ -13,9 +13,11 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@fontsource/atkinson-hyperlegible-next": "^5.3.0",
     "@reduxjs/toolkit": "^2.15.0",
     "axios": "^1.21.1",
     "bulma": "^1.0.4",
+    "lucide-react": "^1.78.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-redux": "^9.3.1",

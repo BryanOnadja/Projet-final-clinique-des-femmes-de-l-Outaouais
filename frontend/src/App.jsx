@@ -15,12 +15,12 @@ function Protege({ children, admin = false }) {
   if (!utilisateur) return <Navigate to="/connexion" replace />
   if (admin && utilisateur.role !== 'admin') return <Navigate to="/" replace />
   return (
-    <>
+    <div className="coquille">
       <Navigation />
-      <main className="section pt-5">
-        <div className="container is-fluid">{children}</div>
+      <main className="contenu" id="contenu">
+        <div className="contenu-interieur">{children}</div>
       </main>
-    </>
+    </div>
   )
 }
 

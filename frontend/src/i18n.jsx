@@ -12,7 +12,7 @@ const TEXTES = {
     'langue.choix': "Langue de l'interface",
 
     'nav.appels': 'Appels',
-    'nav.nouvel': '+ Nouvel appel',
+    'nav.nouvel': 'Nouvel appel',
     'nav.archives': 'Archives et recherche',
     'nav.admin': 'Administration',
     'nav.menu': 'Menu',
@@ -50,7 +50,8 @@ const TEXTES = {
     'tableau.nomInconnu': 'Nom inconnu',
     'tableau.motifConfidentiel': 'Confidentiel : ouvrir la fiche',
     'tableau.personne': 'Personne',
-    'tableau.vide': 'Aucun appel à traiter 🎉',
+    'tableau.vide': 'Aucun appel à traiter',
+    'tableau.videAide': 'Les nouveaux messages apparaîtront ici automatiquement.',
 
     'filtre.recherche': 'Rechercher un nom ou un numéro',
     'filtre.rechercheLabel': 'Recherche',
@@ -73,6 +74,14 @@ const TEXTES = {
     'col.statut': 'Statut',
     'col.prisPar': 'Pris par',
     'col.derniereAction': 'Dernière action',
+    'col.attente': 'Attente',
+    'filtre.tous': 'Tous',
+    'role.admin': 'Administratrice',
+    'role.membre': "Membre de l'équipe",
+    'connexion.accroche': "Les messages des quatre boîtes vocales et de la réception, au même endroit, pour toute l'équipe.",
+    'fiche.infos': 'Coordonnées et motif',
+    'fiche.suivi': 'Suivi',
+    'duree': ({ minutes }) => (minutes < 1 ? "à l'instant" : minutes < 60 ? `${minutes} min` : minutes < 1440 ? `${Math.floor(minutes / 60)} h` : `${Math.floor(minutes / 1440)} j`),
 
     'nouvel.titre': 'Nouvel appel',
     'nouvel.origine': "D'où vient l'appel ?",
@@ -84,7 +93,7 @@ const TEXTES = {
     'nouvel.pourquoi': 'Pourquoi ?',
     'nouvel.aDeterminer': 'À déterminer',
     'nouvel.motif': "Motif de l'appel",
-    'nouvel.confidentiel': '🔒 La personne demande une mesure de confidentialité',
+    'nouvel.confidentiel': 'La personne demande une mesure de confidentialité',
     'nouvel.consigne': 'Consigne',
     'nouvel.consigneEx': 'Ex. : ne pas laisser de message',
     'nouvel.transcription': 'Transcription du message vocal',
@@ -92,10 +101,10 @@ const TEXTES = {
     'nouvel.annuler': 'Annuler',
     'nouvel.creer': 'Créer la fiche',
 
-    'fiche.retour': '← Retour à la liste',
+    'fiche.retour': 'Retour à la liste',
     'fiche.archive': 'Archivé',
     'fiche.majCollegue': 'Mis à jour par une collègue',
-    'fiche.jeMenOccupe': "✋ Je m'en occupe",
+    'fiche.jeMenOccupe': "Je m'en occupe",
     'fiche.prisPar': 'Pris en charge par',
     'fiche.vous': 'vous',
     'fiche.liberer': 'Libérer',
@@ -164,7 +173,7 @@ const TEXTES = {
     'langue.choix': 'Interface language',
 
     'nav.appels': 'Calls',
-    'nav.nouvel': '+ New call',
+    'nav.nouvel': 'New call',
     'nav.archives': 'Archive and search',
     'nav.admin': 'Administration',
     'nav.menu': 'Menu',
@@ -202,7 +211,8 @@ const TEXTES = {
     'tableau.nomInconnu': 'Unknown name',
     'tableau.motifConfidentiel': 'Confidential: open the record',
     'tableau.personne': 'Nobody',
-    'tableau.vide': 'No calls to handle 🎉',
+    'tableau.vide': 'No calls to handle',
+    'tableau.videAide': 'New messages will appear here automatically.',
 
     'filtre.recherche': 'Search a name or number',
     'filtre.rechercheLabel': 'Search',
@@ -225,6 +235,14 @@ const TEXTES = {
     'col.statut': 'Status',
     'col.prisPar': 'Handled by',
     'col.derniereAction': 'Last action',
+    'col.attente': 'Waiting',
+    'filtre.tous': 'All',
+    'role.admin': 'Administrator',
+    'role.membre': 'Team member',
+    'connexion.accroche': 'Messages from the four voicemail boxes and the front desk, in one place, for the whole team.',
+    'fiche.infos': 'Contact and reason',
+    'fiche.suivi': 'Follow-up',
+    'duree': ({ minutes }) => (minutes < 1 ? 'just now' : minutes < 60 ? `${minutes} min` : minutes < 1440 ? `${Math.floor(minutes / 60)} h` : `${Math.floor(minutes / 1440)} d`),
 
     'nouvel.titre': 'New call',
     'nouvel.origine': 'Where did the call come from?',
@@ -236,7 +254,7 @@ const TEXTES = {
     'nouvel.pourquoi': 'Why?',
     'nouvel.aDeterminer': 'To be determined',
     'nouvel.motif': 'Reason for the call',
-    'nouvel.confidentiel': '🔒 The caller requests confidentiality',
+    'nouvel.confidentiel': 'The caller requests confidentiality',
     'nouvel.consigne': 'Instruction',
     'nouvel.consigneEx': 'E.g.: do not leave a message',
     'nouvel.transcription': 'Voicemail transcription',
@@ -244,10 +262,10 @@ const TEXTES = {
     'nouvel.annuler': 'Cancel',
     'nouvel.creer': 'Create record',
 
-    'fiche.retour': '← Back to the list',
+    'fiche.retour': 'Back to the list',
     'fiche.archive': 'Archived',
     'fiche.majCollegue': 'Updated by a colleague',
-    'fiche.jeMenOccupe': "✋ I'll handle it",
+    'fiche.jeMenOccupe': "I'll handle it",
     'fiche.prisPar': 'Handled by',
     'fiche.vous': 'you',
     'fiche.liberer': 'Release',
@@ -421,13 +439,13 @@ export function LangueProvider({ children }) {
 export const useLangue = () => useContext(LangueContext)
 
 // Le bouton FR | EN
-export function BoutonLangue({ taille = 'is-small' }) {
+export function BoutonLangue({ sombre = false }) {
   const { langue, setLangue, t } = useLangue()
   return (
-    <div className="buttons has-addons bouton-langue mb-0" role="group" aria-label={t('langue.choix')}>
+    <div className={`segmente${sombre ? ' segmente-sombre' : ''}`} role="group" aria-label={t('langue.choix')}>
       {['fr', 'en'].map((l) => (
         <button key={l} type="button"
-          className={`button ${taille} mb-0 ${langue === l ? 'is-primary' : ''}`}
+          className={`segment${langue === l ? ' est-actif' : ''}`}
           aria-pressed={langue === l}
           lang={l}
           title={l === 'fr' ? 'Français' : 'English'}

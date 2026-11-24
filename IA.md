@@ -11,6 +11,7 @@ Ajoutez une entrée à chaque nouvelle utilisation.
 | 2026-11-20 | Claude | Première version du code (front-end React, back-end Express, base MySQL, Socket.io) | « puis qur tu as deja tout le plan et tout je veux du visel... donne moi alors le front end back end je vais faire un depot sur gitub et voir le fnctionnement » |
 | 2026-11-23 | Claude | Bouton FR/EN et traduction anglaise de l'interface | « es ce que l'application peut etre mise en anglais? » puis « oui un bouton » |
 | 2026-11-23 | Claude | Réorganisation selon les supports du cours (frontend/ et backend/, MVC, Axios, Redux Toolkit) et tests (Vitest, Playwright, Postman) | « lapplication doit avoir un frontend et un backend regarde les cours qui sont dans le dossier Sed2515 » puis « oui » |
+| 2026-11-23 | Claude | Refonte visuelle : logo, couleurs, police, icônes à la place des émojis, barre latérale | « je veux quon modifie l'apparence de l'application je veux que ca ait l'air dune vrai application professionnelle avec les couleurs bien choisi et les logos bien jolie  et meme les emoticones je veux quils soient bien pro » |
 
 ## Ce que l'équipe a vérifié et compris
 
