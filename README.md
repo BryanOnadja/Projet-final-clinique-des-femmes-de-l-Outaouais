@@ -87,8 +87,6 @@ Pour remettre les données à zéro : `npm run db:init`.
 
 ## Structure du projet
 
-Le projet suit l'organisation vue dans les labos du cours : un dossier **`frontend/`** (React) et un dossier **`backend/`** (Express, en MVC).
-
 ```
 clinique-appels/
 ├── frontend/                      Front-end : React (Vite) + Redux Toolkit + Axios + Bulma
@@ -180,7 +178,6 @@ git remote add origin https://github.com/VOTRE-COMPTE/clinique-appels.git
 git push -u origin main
 ```
 
-Vérifiez avant chaque `git push` que `backend/.env` n'apparaît **pas** dans `git status`.
 
 ## Utilisation de l'IA générative
 
